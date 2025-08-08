@@ -1003,8 +1003,6 @@
                 if (e.target.value.length > 0 && document.getElementById('start-time').value === '') {
                     const now = new Date();
                     document.getElementById('start-time').value = now.toLocaleString('pt-BR');
-                } else {
-                    document.getElementById('start-time').value = '';
                 }
             });
 
@@ -1093,7 +1091,7 @@
             const checklistTitle = form.getAttribute('data-checklist-title');
             
             const now = new Date();
-            document.getElementById('end-time').value = now.toLocaleString('pt-BR');
+            document.getElementById('end-time').value = now.toLocaleString('pt-BR'); // Preenche Hora Final aqui
 
             if (form['start-time'].value.trim() === '') {
                 showModal('Aviso', 'O campo "Hora Inicial" é obrigatório. Por favor, preencha a Frota para que seja gerado automaticamente.');
