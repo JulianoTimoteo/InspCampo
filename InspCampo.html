@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛠️🪛  InspCampo  🛠️🪛</title>
+    <!-- Tailwind CSS para estilização (CDN para ambiente de desenvolvimento/Canvas) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- jsPDF para exportação de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas para captura de tela para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- SheetJS (xlsx) para exportação de XLSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <!-- Ícone do aplicativo (Favicon) -->
+    <link rel="icon" href="https://usinapitangueiras.com.br/wp-content/uploads/2020/10/cropped-favicon-32x32.png" type="image/png">
+    <!-- Ícone para atalho (PWA icon) -->
+    <link rel="apple-touch-icon" href="https://usinapitangueiras.com.br/wp-content/uploads/2020/04/usina-pitangueiras-logo.png">
+    <style>
+        /* Define a fonte Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Estilos para os botões de abas */
+        .tab-button {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button:hover {
+            border-bottom-color: #d1d5db;
+        }
+        .tab-button.active {
+            border-bottom-color: #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        /* Estilos do Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* Estilos para o toast de notificação */
+        #notification-toast {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #10b981;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1-px rgba(0, 0, 0, 0.06);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            z-index: 2000;
+        }
+        #notification-toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* Estilos para o card principal */
+        .main-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+        /* Estilos para os botões de tags */
+        .tag-button {
+            transition: all 0.2s ease-in-out;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            font-weight: 500;
+        }
+        .tag-button.active {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        .tag-button:not(.active):hover {
+            background-color: #e5e7eb;
+        }
+        /* Estilo para impressão */
+        @media print {
+            body > *:not(#report-modal):not(.print-only) {
+                display: none;
+            }
+            #report-modal {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                background-color: white;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+            #report-modal .modal-content {
+                width: 100%;
+                max-width: 100%;
+                padding: 1rem;
+            }
+            #report-modal .print\:hidden {
+                display: none;
+            }
+        }
+        #user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #fff;
+            cursor: pointer;
+            overflow: hidden; /* Garante que a imagem não vaze */
+        }
+        #user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Garante que a imagem preencha o contêiner sem ser esticada */
+        }
+    </style>
+</head>
+<body class="font-inter">
+    <!-- Tela de Login -->
+    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-4">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Usuário</label>
+                    <input type="text" id="username" name="username" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                </div>
+                <div class="relative">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input type="password" id="password" name="password" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required minlength="8" pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$">
+                    <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 top-6 px-3 flex items-center text-gray-500">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <p id="caps-lock-warning" class="text-sm text-red-500 mt-1 hidden">Caps Lock está ativado!</p>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="remember-me" class="rounded text-blue-600 focus:ring-blue-500">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-900">Salvar usuário e senha</label>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                    Entrar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interface Principal do Aplicativo -->
+    <div id="main-app" class="container mx-auto p-4 md:p-8 hidden">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <!-- Título e Logo ajustados para responsividade -->
+            <div class="flex flex-col items-center md:items-start w-full md:w-auto mb-4 md:mb-0">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 text-center md:text-left mb-2">Sistema de Checklists</h1>
+                <img src="https://usinapitangueiras.com.br/wp-content/uploads/2020/04/usina-pitangueiras-logo.png" alt="Logo Usina Pitangueiras" class="max-w-xs md:max-w-sm lg:max-w-md h-auto mx-auto md:mx-0" style="width: 100%; max-width: 250px;">
+            </div>
+            <div class="flex items-center space-x-4 mt-4 md:mt-0">
+                <div id="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span id="user-info" class="text-gray-600"></span>
+                <button id="change-password-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                    Alterar Senha
+                </button>
+                <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                    Sair
+                </button>
+            </div>
+        </div>
+
+        <!-- Abas -->
+        <div class="flex flex-wrap justify-center space-x-2 md:space-x-4 mb-8 border-b border-gray-200">
+            <button id="aplicador-tab" class="tab-button pb-2 text-gray-500 hidden">Aplicador</button>
+            <button id="lider-tab" class="tab-button pb-2 text-gray-500 hidden">Líder</button>
+            <button id="pcma-tab" class="tab-button pb-2 text-gray-500 hidden">PCMA</button>
+            <button id="realizados-tab" class="tab-button pb-2 text-gray-500 hidden">Realizados</button>
+            <button id="novos-tab" class="tab-button pb-2 text-gray-500 hidden">Novo/Editar</button>
+            <button id="cadastro-tab" class="tab-button pb-2 text-gray-500 hidden">Cadastro</button>
+        </div>
+
+        <!-- Conteúdo das Abas -->
+        <div id="aplicador-content" class="tab-content hidden">
+            <div class="main-card">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Checklists Disponíveis</h2>
+                <div id="tag-cloud-aplicador" class="flex flex-wrap gap-2 mb-6"></div>
+                <div id="aplicador-form-container" class="mt-8 hidden">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Aplicar Checklist: <span id="aplicador-checklist-title"></span></h3>
+                    <form id="aplicador-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="frota" class="block text-sm font-medium text-gray-700">Frota (Máx 7 dígitos)</label>
+                                <input type="text" id="frota" name="frota" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required minlength="1" maxlength="7" pattern="[0-9]{1,7}">
+                            </div>
+                            <div>
+                                <label for="os" class="block text-sm font-medium text-gray-700">Nº OS (Máx 7 dígitos)</label>
+                                <input type="text" id="os" name="os" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required minlength="1" maxlength="7" pattern="[0-9]{1,7}">
+                            </div>
+                            <div>
+                                <label for="aplicador-name" class="block text-sm font-medium text-gray-700">Aplicador</label>
+                                <input type="text" id="aplicador-name" name="aplicador-name" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm bg-gray-100" readonly>
+                            </div>
+                            <div>
+                                <label for="mecanico-name" class="block text-sm font-medium text-gray-700">Mecânico</label>
+                                <input type="text" id="mecanico-name" name="mecanico-name" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm">
+                            </div>
+                            <div>
+                                <label for="start-time" class="block text-sm font-medium text-gray-700">Hora Inicial</label>
+                                <input type="text" id="start-time" name="start-time" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm bg-gray-100" readonly>
+                            </div>
+                            <div>
+                                <label for="end-time" class="block text-sm font-medium text-gray-700">Hora Final</label>
+                                <input type="text" id="end-time" name="end-time" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm bg-gray-100" readonly>
+                            </div>
+                        </div>
+                        <div id="aplicador-sections-container"></div>
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition-colors">
+                                Salvar Respostas
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="lider-content" class="tab-content hidden">
+            <div class="main-card">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Checklists Pendentes para Líder</h2>
+                <div id="lider-checklists-container"></div>
+            </div>
+        </div>
+
+        <div id="pcma-content" class="tab-content hidden">
+            <div class="main-card">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Checklists Pendentes para PCMA</h2>
+                <div id="pcma-checklists-container"></div>
+            </div>
+        </div>
+
+        <div id="realizados-content" class="tab-content hidden">
+            <div class="main-card">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Checklists Realizados</h2>
+                <div id="realizados-list-container"></div>
+                <div id="realizados-pagination" class="flex justify-center space-x-2 mt-4"></div>
+            </div>
+        </div>
+
+        <div id="novos-content" class="tab-content hidden">
+            <div class="main-card">
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <span id="novos-title">Novo Checklist</span>
+                    </h2>
+                    <div class="flex space-x-2">
+                        <button id="delete-selected-checklist-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors hidden">
+                            <i class="fas fa-trash-alt mr-2"></i>Excluir
+                        </button>
+                        <button id="save-new-checklist-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                            <i class="fas fa-save mr-2"></i>Salvar
+                        </button>
+                    </div>
+                </div>
+                <div id="tag-cloud-novos" class="flex flex-wrap gap-2 mb-6"></div>
+                <form id="novos-checklist-form" class="space-y-4 mt-8">
+                    <div>
+                        <label for="checklist-title" class="block text-sm font-medium text-gray-700">Título do Checklist</label>
+                        <input type="text" id="checklist-title" name="checklist-title" placeholder="Ex: Checklist de Manutenção" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                    </div>
+                    <div id="sections-container"></div>
+                    <div class="flex justify-end pt-4">
+                        <button type="button" id="add-section-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-full shadow transition-colors">
+                            <i class="fas fa-plus-circle mr-2"></i>Adicionar Seção
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="cadastro-content" class="tab-content hidden">
+            <div class="main-card">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Gerenciamento de Usuários</h2>
+                <div class="mb-4">
+                    <label for="user-search" class="block text-sm font-medium text-gray-700">Buscar Usuário</label>
+                    <input type="text" id="user-search" placeholder="Buscar por nome ou usuário..." class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm">
+                </div>
+                <div class="mb-4 flex items-center space-x-4">
+                    <button id="import-xlsx-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                        <i class="fas fa-file-excel mr-2"></i>Importar XLSX
+                    </button>
+                    <input type="file" id="upload-xlsx-input" accept=".xlsx" class="hidden">
+                    <i class="fas fa-question-circle text-gray-500 cursor-help" title="Formato esperado: nome, usuario, senha, nivelAcesso, id"></i>
+
+                    <button id="import-csv-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                        <i class="fas fa-file-csv mr-2"></i>Importar CSV
+                    </button>
+                    <input type="file" id="upload-csv-input" accept=".csv" class="hidden">
+                    <i class="fas fa-question-circle text-gray-500 cursor-help" title="Formato esperado: nome, usuario, senha, nivelAcesso, id"></i>
+                </div>
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold mb-2">Novo Usuário</h3>
+                    <form id="add-user-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="new-user-name" class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                                <input type="text" id="new-user-name" name="new-user-name" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="new-user-id" class="block text-sm font-medium text-gray-700">ID USINA</label>
+                                <input type="text" id="new-user-id" name="new-user-id" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="new-user-username" class="block text-sm font-medium text-gray-700">Usuário (Login)</label>
+                                <input type="text" id="new-user-username" name="new-user-username" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                            </div>
+                            <div class="relative">
+                                <label for="new-user-password" class="block text-sm font-medium text-gray-700">Senha</label>
+                                <input type="password" id="new-user-password" name="new-user-password" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required minlength="8" pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$">
+                                <button type="button" id="toggle-new-user-password" class="absolute inset-y-0 right-0 top-6 px-3 flex items-center text-gray-500">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div id="access-level-container">
+                                <label for="new-user-level" class="block text-sm font-medium text-gray-700">Nível de Acesso</label>
+                                <select id="new-user-level" name="new-user-level" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm">
+                                    <option value="aplicador">Aplicador</option>
+                                    <option value="lider">Líder</option>
+                                    <option value="pcma">PCMA</option>
+                                    <option value="master">Master</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                            <i class="fas fa-user-plus mr-2"></i>Adicionar Usuário
+                        </button>
+                    </form>
+                </div>
+
+                <div id="user-list-container" class="mt-8">
+                    <h3 class="text-xl font-bold mb-2">Usuários Cadastrados</h3>
+                    <div id="user-list" class="space-y-2"></div>
+                    <div id="user-pagination" class="flex justify-center space-x-2 mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Mensagem -->
+    <div id="message-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-4"></h3>
+            <p id="modal-body" class="text-gray-600 mb-6"></p>
+            <div class="flex justify-end">
+                <button id="modal-close-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full">Ok</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="confirm-modal-title" class="text-xl font-bold text-gray-800 mb-4"></h3>
+            <p id="confirm-modal-body" class="text-gray-600 mb-6"></p>
+            <div class="flex justify-end space-x-4">
+                <button id="confirm-modal-cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-full">Cancelar</button>
+                <button id="confirm-modal-confirm-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Relatório -->
+    <div id="report-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Relatório do Checklist</h3>
+            <div id="report-content" class="prose max-w-none"></div>
+            <div class="flex justify-end space-x-4 mt-6 print:hidden">
+                <button id="export-pdf-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full"><i class="fas fa-file-pdf mr-2"></i>Exportar PDF</button>
+                <button id="export-xlsx-btn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full"><i class="fas fa-file-excel mr-2"></i>Exportar XLSX</button>
+                <button id="report-modal-close-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Seleção de Avatar -->
+    <div id="avatar-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Alterar Avatar</h3>
+            <div class="flex flex-col space-y-4">
+                <button id="take-photo-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                    <i class="fas fa-camera mr-2"></i>Tirar Foto
+                </button>
+                <input type="file" id="upload-photo-input" accept="image/*" class="hidden">
+                <button id="choose-photo-btn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                    <i class="fas fa-upload mr-2"></i>Escolher da Galeria
+                </button>
+                <button id="avatar-modal-close-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-full">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Alterar Senha (separado da aba Cadastro) -->
+    <div id="change-password-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Alterar Senha</h3>
+            <form id="change-password-modal-form" class="space-y-4">
+                <div class="relative">
+                    <label for="current-password-modal" class="block text-sm font-medium text-gray-700">Senha Atual</label>
+                    <input type="password" id="current-password-modal" name="current-password-modal" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                    <button type="button" id="toggle-current-password-modal" class="absolute inset-y-0 right-0 top-6 px-3 flex items-center text-gray-500">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="relative">
+                    <label for="new-password-modal" class="block text-sm font-medium text-gray-700">Nova Senha (min. 8 dígitos, com letras e números)</label>
+                    <input type="password" id="new-password-modal" name="new-password-modal" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required minlength="8" pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$">
+                    <button type="button" id="toggle-new-password-modal" class="absolute inset-y-0 right-0 top-6 px-3 flex items-center text-gray-500">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="relative">
+                    <label for="confirm-new-password-modal" class="block text-sm font-medium text-gray-700">Confirmar Nova Senha</label>
+                    <input type="password" id="confirm-new-password-modal" name="confirm-new-password-modal" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                    <button type="button" id="toggle-confirm-new-password-modal" class="absolute inset-y-0 right-0 top-6 px-3 flex items-center text-gray-500">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="change-password-modal-cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-full">Cancelar</button>
+                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                        Alterar Senha
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div id="notification-toast"></div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variáveis globais para Firebase e estado da aplicação
+        let app, db, auth;
+        let currentUser; // Este objeto agora conterá o UID do Firebase Auth e o ID personalizado
+        const environmentAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        // Configuração do Firebase: prioriza a configuração do ambiente, com fallback para a configuração fornecida.
+        const firebaseConfig = typeof __firebase_config !== 'undefined' && Object.keys(JSON.parse(__firebase_config)).length > 0
+            ? JSON.parse(__firebase_config)
+            : {
+                apiKey: "AIzaSyDtmdNMWILnWlzAeR2sRYM1SBJRE8FN4sg",
+                authDomain: "inspcampo-2f988.firebaseapp.com",
+                projectId: "inspcampo-2f988",
+                storageBucket: "inspcampo-2f988.appspot.com",
+                messagingSenderId: "1046570896752",
+                appId: "1:1046570896752:web:c1d8edd8660fcbfb4a53b5",
+                measurementId: "G-1QZJ41R49Z"
+              };
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        const COLLECTIONS = {
+            USERS: "users",
+            DYNAMIC_CHECKLISTS: "dynamic_checklists",
+            APPLIED_CHECKLISTS: "applied_checklists"
+        };
+        const PAGINATION_LIMIT = 5; // Limite de paginação para ambas as guias
+
+        // --- Funções de UI ---
+
+        // Exibe um modal de mensagem
+        const showModal = (title, message) => {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').textContent = message;
+            document.getElementById('message-modal').style.display = 'flex';
+        };
+
+        // Exibe um modal de confirmação
+        const showConfirmModal = (title, message, onConfirm) => {
+            document.getElementById('confirm-modal-title').textContent = title;
+            document.getElementById('confirm-modal-body').textContent = message;
+            document.getElementById('confirm-modal-confirm-btn').onclick = () => {
+                onConfirm();
+                hideModal();
+            };
+            document.getElementById('confirm-modal').style.display = 'flex';
+        };
+
+        // Esconde todos os modals
+        const hideModal = () => {
+            document.getElementById('message-modal').style.display = 'none';
+            document.getElementById('confirm-modal').style.display = 'none';
+            document.getElementById('report-modal').style.display = 'none';
+            document.getElementById('avatar-modal').style.display = 'none';
+            document.getElementById('change-password-modal').style.display = 'none'; // Esconde o modal de alterar senha
+        };
+
+        // Altera a aba ativa
+        const switchTab = (tabName) => {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active', 'text-blue-600');
+                button.classList.add('text-gray-500');
+            });
+
+            const contentElement = document.getElementById(`${tabName}-content`);
+            if (contentElement) {
+                contentElement.classList.remove('hidden');
+            }
+            const tabButton = document.getElementById(`${tabName}-tab`);
+            if (tabButton) {
+                tabButton.classList.add('active', 'text-blue-600');
+                tabButton.classList.remove('text-gray-500');
+            }
+
+            // Lógica específica para cada aba
+            if (tabName === 'novos') {
+                document.getElementById('novos-title').textContent = 'Novo Checklist';
+                document.getElementById('delete-selected-checklist-btn').classList.add('hidden');
+                document.getElementById('novos-checklist-form').setAttribute('data-checklist-id', '');
+                renderChecklistFormNovos();
+            }
+            if (tabName === 'realizados') {
+                renderRealizadosList(1);
+            }
+            if (tabName === 'cadastro') {
+                renderUserList(1); // Renderiza a primeira página de usuários
+            }
+        };
+
+        // Exibe um toast de notificação
+        const showToast = (message, type = 'success') => {
+            const toast = document.getElementById('notification-toast');
+            toast.textContent = message;
+            if (type === 'success') {
+                toast.style.backgroundColor = '#10b981';
+            } else if (type === 'error') {
+                toast.style.backgroundColor = '#ef4444';
+            }
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        };
+        
+        // Função para mostrar ou esconder o botão de toggle de senha
+        const togglePasswordVisibility = (inputSelector, buttonSelector) => {
+            const passwordInput = document.querySelector(inputSelector);
+            const toggleButton = document.querySelector(buttonSelector);
+            if (passwordInput && toggleButton) {
+                toggleButton.addEventListener('click', () => {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    toggleButton.querySelector('i').classList.toggle('fa-eye');
+                    toggleButton.querySelector('i').classList.toggle('fa-eye-slash');
+                });
+            }
+        };
+
+        // --- Funções de Utilitário ---
+
+        // Utility function for exponential backoff retry
+        const retryWithExponentialBackoff = async (func, retries = 3, delay = 1000) => {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    return await func();
+                } catch (error) {
+                    // Log detalhado para erros de rede
+                    if (error.code === 'unavailable' || error.code === 'internal' || error.code === 'resource-exhausted' || error.code === 'cancelled') {
+                        console.warn(`Tentativa de re-conexão ${i + 1}/${retries} para erro de rede: ${error.message}. Tentando novamente em ${delay / 1000}s...`);
+                        await new Promise(res => setTimeout(res, delay));
+                        delay *= 2; // Aumento exponencial
+                    } else {
+                        throw error; // Re-lança outros tipos de erros imediatamente
+                    }
+                }
+            }
+            throw new Error('Número máximo de tentativas excedido para a operação.');
+        };
+
+        // Check for online/offline status
+        const checkOnlineStatus = () => {
+            if (!navigator.onLine) {
+                showToast('Você está offline. Algumas operações podem não funcionar.', 'error');
+                console.warn('Aplicativo está offline. Operações do Firestore podem falhar.');
+            } else {
+                showToast('Você está online novamente!', 'success');
+                console.log('Aplicativo está online.');
+            }
+        };
+
+
+        // --- Firebase e Lógica de Autenticação ---
+
+        // Inicializa o Firebase
+        const initFirebase = async () => {
+            if (Object.keys(firebaseConfig).length === 0) {
+                console.error("Firebase config is missing. Please provide it.");
+                showModal('Erro de Inicialização', 'A configuração do Firebase está faltando. Não foi possível iniciar o aplicativo.');
+                return;
+            }
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Ouve as mudanças de estado da autenticação do Firebase Auth
+                onAuthStateChanged(auth, async (user) => {
+                    console.log("onAuthStateChanged triggered. Firebase Auth User UID:", user ? user.uid : "null", "Is Anonymous:", user ? user.isAnonymous : "N/A");
+
+                    if (user) { // Se há um usuário autenticado pelo Firebase Auth (mesmo que anônimo)
+                        let userDocRef;
+                        let userDocSnap;
+                        let userData = null;
+
+                        // Tenta carregar o usuário pelo UID do Firebase Auth (que é o ID do documento agora)
+                        userDocRef = doc(db, COLLECTIONS.USERS, user.uid);
+                        userDocSnap = await retryWithExponentialBackoff(() => getDoc(userDocRef));
+
+                        if (userDocSnap.exists()) {
+                            userData = userDocSnap.data();
+                            currentUser = { firebaseUid: user.uid, ...userData }; // firebaseUid é o UID do Firebase Auth
+                            console.log("Usuário do Firebase Auth encontrado no Firestore. Dados carregados:", currentUser);
+                            handlePostLogin();
+                        } else {
+                            // Se não encontrou pelo UID, e é um usuário anônimo
+                            if (user.isAnonymous) {
+                                // Tenta encontrar o usuário 'josericci' pelo campo 'id' dentro dos documentos
+                                // Isso é uma verificação de fallback para o caso de o documento josericci
+                                // ter sido criado com um ID diferente do UID anônimo no passado.
+                                const q = query(collection(db, COLLECTIONS.USERS), where("id", "==", "josericci"));
+                                const querySnapshot = await retryWithExponentialBackoff(() => getDocs(q));
+
+                                if (!querySnapshot.empty) {
+                                    const josericciDoc = querySnapshot.docs[0];
+                                    const josericciData = josericciDoc.data();
+                                    // Se josericci já existe e seu firebaseAuthUid corresponde ao UID anônimo atual
+                                    if (josericciData.firebaseAuthUid === user.uid) {
+                                        currentUser = { firebaseUid: user.uid, ...josericciData };
+                                        console.log("Usuário 'josericci' encontrado e sincronizado com UID anônimo. Dados carregados:", currentUser);
+                                        handlePostLogin();
+                                    } else {
+                                        // Se josericci existe mas com outro UID ou sem UID, atualiza-o
+                                        // Isso pode acontecer se o localStorage for limpo mas o doc josericci no Firestore permanecer
+                                        console.log("Atualizando o documento 'josericci' com o novo UID anônimo:", user.uid);
+                                        // Atualiza o documento josericci existente (se o ID do documento não for o UID)
+                                        await retryWithExponentialBackoff(() => updateDoc(josericciDoc.ref, { firebaseAuthUid: user.uid }, { merge: true }));
+                                        currentUser = { firebaseUid: user.uid, ...josericciData, firebaseAuthUid: user.uid };
+                                        handlePostLogin();
+                                    }
+                                } else {
+                                    // Se é um usuário anônimo e o master 'josericci' ainda não foi criado no Firestore
+                                    // Cria 'josericci' usando o UID anônimo como ID do documento
+                                    const josericciDocRef = doc(db, COLLECTIONS.USERS, user.uid); // Document ID is Firebase UID
+                                    await retryWithExponentialBackoff(() => setDoc(josericciDocRef, {
+                                        id: 'josericci', // ID personalizado do aplicativo
+                                        nome: "Jose Ricci",
+                                        usuario: "josericci",
+                                        senha: "admin2025",
+                                        nivel: "master",
+                                        ativo: true,
+                                        criadoEm: serverTimestamp(),
+                                        firebaseAuthUid: user.uid // Armazena o UID real do Firebase Auth
+                                    }, { merge: true }));
+                                    console.log("Usuário master 'josericci' criado com UID anônimo como ID do documento:", user.uid);
+                                    currentUser = { firebaseUid: user.uid, id: 'josericci', nome: "Jose Ricci", usuario: "josericci", nivel: "master" };
+                                    handlePostLogin();
+                                }
+                            } else {
+                                console.log("Usuário do Firebase Auth não encontrado no Firestore e não é anônimo. Exibindo tela de login.");
+                                showLoginScreen();
+                            }
+                        }
+                    } else {
+                        // Nenhum usuário do Firebase Auth (ex: após logout ou estado inicial)
+                        console.log("Nenhum usuário do Firebase Auth. Exibindo tela de login.");
+                        showLoginScreen();
+                    }
+                });
+
+                // Autenticação inicial: tenta com token customizado ou anonimamente
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+            } catch (error) {
+                console.error("Erro ao inicializar Firebase ou autenticar:", error);
+                showModal('Erro', 'Não foi possível conectar ao sistema. Por favor, tente novamente.');
+            }
+        };
+
+
+        // Lógica de login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            try {
+                // Busca o usuário no Firestore pelo campo 'usuario'
+                const q = query(collection(db, COLLECTIONS.USERS), where("usuario", "==", username));
+                const querySnapshot = await retryWithExponentialBackoff(() => getDocs(q));
+                
+                if (querySnapshot.empty) {
+                    showModal('Erro de Login', 'Usuário não encontrado.');
+                    return;
+                }
+
+                const userDoc = querySnapshot.docs[0];
+                const userData = userDoc.data();
+                
+                if (userData.senha !== password) {
+                    showModal('Erro de Login', 'Senha incorreta.');
+                    return;
+                }
+
+                // Após login bem-sucedido, garantimos que o documento do usuário no Firestore
+                // tenha o firebaseAuthUid atualizado para o UID do Firebase Auth logado (anônimo).
+                if (auth.currentUser && userData.firebaseAuthUid !== auth.currentUser.uid) {
+                    // Usa o ID do documento REAL para atualizar (que deve ser o UID antigo ou o ID "josericci")
+                    const userDocRefToUpdate = doc(db, COLLECTIONS.USERS, userDoc.id);
+                    await retryWithExponentialBackoff(() => updateDoc(userDocRefToUpdate, { firebaseAuthUid: auth.currentUser.uid }, { merge: true }));
+                    console.log(`firebaseAuthUid do usuário '${username}' atualizado para: ${auth.currentUser.uid}`);
+                }
+
+                // Atualiza o objeto currentUser local com o UID do Firebase Auth atual
+                currentUser = { firebaseUid: auth.currentUser.uid, ...userData };
+                console.log("Login bem-sucedido. Usuário do aplicativo:", currentUser);
+                console.log("UID do Firebase Auth após login no formulário:", auth.currentUser ? auth.currentUser.uid : "N/A");
+
+
+                if (rememberMe) {
+                    localStorage.setItem('lastUser', username);
+                } else {
+                    localStorage.removeItem('lastUser');
+                }
+                
+                handlePostLogin();
+                
+            } catch (error) {
+                console.error("Erro durante o login:", error);
+                showModal('Erro de Login', 'Ocorreu um erro. Tente novamente.');
+            }
+        });
+
+        // Mostra a tela de login
+        const showLoginScreen = () => {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+            const lastUser = localStorage.getItem('lastUser');
+            if (lastUser) {
+                document.getElementById('username').value = lastUser;
+            }
+        };
+
+        // Lógica após o login bem-sucedido
+        const handlePostLogin = async () => {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            showToast(`Bem-vindo(a), ${currentUser.nome}!`, 'success');
+            // Exibe o UID do Firebase Auth real, que é o ID do documento do usuário
+            // ALTERAÇÃO AQUI: Mostra ID USINA em vez de UID do Firebase
+            document.getElementById('user-info').textContent = `${currentUser.nome} (${currentUser.usuario}) - ID USINA: ${currentUser.id}`;
+            setupTabs(currentUser.nivel);
+            const savedAvatar = localStorage.getItem(`avatar-${currentUser.firebaseUid}`); 
+            if (savedAvatar) {
+                const avatarImg = document.createElement('img');
+                avatarImg.src = savedAvatar;
+                const userAvatarDiv = document.getElementById('user-avatar');
+                userAvatarDiv.innerHTML = '';
+                userAvatarDiv.appendChild(avatarImg);
+            }
+
+            // A lógica de atualização do firebaseAuthUid para josericci agora é tratada dentro de initFirebase e login-form
+            // Não é mais necessário um bloco específico aqui.
+
+            if (currentUser.nivel === 'aplicador') switchTab('aplicador');
+            else if (currentUser.nivel === 'lider') switchTab('lider');
+            else if (currentUser.nivel === 'pcma') switchTab('pcma');
+            else if (currentUser.nivel === 'master') switchTab('aplicador');
+        };
+
+        // Configura as abas visíveis de acordo com o nível de acesso
+        const setupTabs = (nivel) => {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.add('hidden'));
+
+            const allTabs = {
+                'master': ['aplicador', 'lider', 'pcma', 'realizados', 'novos', 'cadastro'],
+                'pcma': ['pcma', 'realizados', 'novos'],
+                'lider': ['lider', 'realizados'],
+                'aplicador': ['aplicador', 'realizados']
+            };
+
+            const visibleTabs = allTabs[nivel] || [];
+            visibleTabs.forEach(tab => {
+                const btn = document.getElementById(`${tab}-tab`);
+                if (btn) btn.classList.remove('hidden');
+            });
+
+            listenForChecklists();
+            if (nivel === 'lider' || nivel === 'pcma' || nivel === 'master') listenForPendingChecklists('lider'); // Líder e Master
+            if (nivel === 'pcma' || nivel === 'master') listenForPendingChecklists('pcma'); // PCMA e Master
+            if (nivel === 'master') listenForUsers();
+            listenForAppliedChecklists();
+        };
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await auth.signOut();
+            currentUser = null;
+            location.reload();
+        });
+
+        // --- ABA APLICADOR ---
+
+        const listenForChecklists = () => {
+            const q = query(collection(db, COLLECTIONS.DYNAMIC_CHECKLISTS));
+            onSnapshot(q, (snapshot) => {
+                const checklists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTagCloud('aplicador', checklists);
+                renderTagCloud('novos', checklists);
+            }, (error) => {
+                console.error("Erro ao carregar checklists:", error);
+                showModal('Erro', 'Não foi possível carregar os checklists. Tente novamente.');
+            });
+        };
+
+        const renderTagCloud = (containerId, checklists) => {
+            const tagCloudContainer = document.getElementById(`tag-cloud-${containerId}`);
+            tagCloudContainer.innerHTML = '';
+            checklists.forEach(checklist => {
+                const button = document.createElement('button');
+                button.textContent = checklist.title;
+                button.setAttribute('data-id', checklist.id);
+                button.classList.add('tag-button', 'bg-white', 'text-gray-700', 'shadow-sm', 'hover:bg-gray-100');
+                
+                button.onclick = () => {
+                    document.querySelectorAll(`#tag-cloud-${containerId} .tag-button`).forEach(btn => btn.classList.remove('active', 'bg-blue-500', 'text-white'));
+                    button.classList.add('active', 'bg-blue-500', 'text-white');
+                    
+                    if (containerId === 'aplicador') {
+                        renderAplicadorForm(checklist);
+                    } else {
+                        renderChecklistFormNovos(checklist);
+                        document.getElementById('delete-selected-checklist-btn').classList.remove('hidden');
+                    }
+                };
+                tagCloudContainer.appendChild(button);
+            });
+        };
+
+        const renderAplicadorForm = (checklist) => {
+            const container = document.getElementById('aplicador-form-container');
+            const form = document.getElementById('aplicador-form');
+            const titleElement = document.getElementById('aplicador-checklist-title');
+            const sectionsContainer = document.getElementById('aplicador-sections-container');
+            
+            titleElement.textContent = checklist.title;
+            sectionsContainer.innerHTML = '';
+            form.setAttribute('data-checklist-id', checklist.id);
+            form.setAttribute('data-checklist-title', checklist.title);
+
+            document.getElementById('aplicador-name').value = `${currentUser.nome} (${currentUser.id})`;
+            document.getElementById('frota').value = '';
+            document.getElementById('os').value = '';
+            document.getElementById('mecanico-name').value = '';
+
+            document.getElementById('frota').addEventListener('input', (e) => {
+                if (e.target.value.length > 0 && document.getElementById('start-time').value === '') {
+                    const now = new Date();
+                    document.getElementById('start-time').value = now.toLocaleString('pt-BR');
+                } else {
+                    document.getElementById('start-time').value = '';
+                }
+            });
+
+            document.getElementById('end-time').value = '';
+            
+            checklist.sections.forEach((section, sectionIndex) => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.classList.add('p-4', 'bg-gray-50', 'rounded-lg', 'shadow-inner');
+                sectionDiv.innerHTML = `<h4 class="text-lg font-bold text-gray-800 mb-2">${section.sectionTitle}</h4>`;
+                
+                section.items.forEach((item, itemIndex) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('mb-2', 'checklist-item-container');
+                    
+                    const itemTextContent = String(item.itemText || '');
+                    const emptyTextClass = itemTextContent.trim() === '' ? 'text-red-500 font-bold' : '';
+
+                    let itemHtml = `
+                        <p class="text-gray-700 font-medium ${emptyTextClass} item-text-display">
+                            ${itemTextContent || 'ITEM SEM TEXTO DEFINIDO NO MODELO!'}
+                        </p>
+                    `;
+                    
+                    console.log(`[RENDER] Checklist "${checklist.title}", Seção "${section.sectionTitle}", Item ${itemIndex}: "${itemTextContent}"`);
+
+                    if (item.itemType === 'radio') {
+                        itemHtml += `
+                            <div class="flex items-center space-x-4 mt-1">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="section-${sectionIndex}-item-${itemIndex}" value="ok" class="form-radio text-green-600" required>
+                                    <span class="ml-2 text-gray-700">OK</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="section-${sectionIndex}-item-${itemIndex}" value="nao-ok" class="form-radio text-red-600" required>
+                                    <span class="ml-2 text-gray-700">NÃO OK</span>
+                                </label>
+                            </div>
+                            <div class="observacao-field hidden mt-2">
+                                <label class="block text-sm font-medium text-gray-700">Observação (obrigatória)</label>
+                                <textarea name="obs-section-${sectionIndex}-item-${itemIndex}" rows="2" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" minlength="6" maxlength="300"></textarea>
+                            </div>
+                        `;
+                    } else if (item.itemType === 'texto') {
+                        itemHtml += `
+                            <input type="text" name="section-${sectionIndex}-item-${itemIndex}" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                        `;
+                    } else if (item.itemType === 'dropdown') {
+                        const optionsHtml = item.itemOptions.split(',').map(option => `<option value="${option.trim()}">${option.trim()}</option>`).join('');
+                        itemHtml += `
+                            <select name="section-${sectionIndex}-item-${itemIndex}" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                                <option value="">Selecione uma opção</option>
+                                ${optionsHtml}
+                            </select>
+                        `;
+                    }
+
+                    itemDiv.innerHTML = itemHtml;
+
+                    if (item.itemType === 'radio') {
+                        itemDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                            radio.addEventListener('change', (e) => {
+                                const obsField = itemDiv.querySelector('.observacao-field');
+                                const textarea = itemDiv.querySelector('textarea');
+                                if (e.target.value === 'nao-ok') {
+                                    obsField.classList.remove('hidden');
+                                    textarea.setAttribute('required', 'required');
+                                } else {
+                                    obsField.classList.add('hidden');
+                                    textarea.removeAttribute('required');
+                                }
+                            });
+                        });
+                    }
+
+                    sectionDiv.appendChild(itemDiv);
+                });
+                sectionsContainer.appendChild(sectionDiv);
+            });
+            container.classList.remove('hidden');
+        };
+
+        document.getElementById('aplicador-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const checklistId = form.getAttribute('data-checklist-id');
+            const checklistTitle = form.getAttribute('data-checklist-title');
+            
+            const now = new Date();
+            document.getElementById('end-time').value = now.toLocaleString('pt-BR');
+
+            if (form['start-time'].value.trim() === '') {
+                showModal('Aviso', 'O campo "Hora Inicial" é obrigatório. Por favor, preencha a Frota para que seja gerado automaticamente.');
+                return;
+            }
+
+            const responseData = {
+                checklist: {
+                    title: checklistTitle,
+                    sections: []
+                },
+                frota: form.frota.value,
+                os: form.os.value,
+                aplicador: { nome: currentUser.nome, id: currentUser.id, firebaseUid: currentUser.firebaseUid }, // Inclui firebaseUid
+                mecanico: form['mecanico-name'].value,
+                data: now.toLocaleDateString('pt-BR'),
+                horaInicial: form['start-time'].value,
+                horaFinal: now.toLocaleString('pt-BR'),
+                status: {
+                    lider: 'pendente',
+                    pcma: 'pendente'
+                },
+                criadoEm: now.toISOString()
+            };
+            
+            const sections = [];
+            const formSections = document.getElementById('aplicador-sections-container').querySelectorAll('.p-4.bg-gray-50');
+            for (let sectionIndex = 0; sectionIndex < formSections.length; sectionIndex++) {
+                const sectionDiv = formSections[sectionIndex];
+                const sectionTitleElement = sectionDiv.querySelector('h4');
+                const sectionTitle = sectionTitleElement ? sectionTitleElement.textContent : `Seção ${sectionIndex + 1}`;
+                
+                const sectionResponses = [];
+                const items = sectionDiv.querySelectorAll('.checklist-item-container');
+                
+                for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+                    const itemDiv = items[itemIndex];
+                    const itemTextElement = itemDiv.querySelector('.item-text-display');
+                    const itemText = itemTextElement ? String(itemTextElement.textContent || '').trim() : '';
+                    
+                    console.log(`[VALIDATION - RADICAL] Checklist "${checklistTitle}", Seção "${sectionTitle}", Item ${itemIndex}: "${itemText}" (Length: ${itemText.length}, Trimmed Length: ${itemText.trim().length})`);
+
+                    if (itemText.trim() === '') {
+                        console.error(`Erro: Texto do item não encontrado para o item ${itemIndex} na seção ${sectionTitle}.`, itemDiv);
+                        showModal('Aviso', `O texto para o item ${itemIndex + 1} na seção "${sectionTitle}" é obrigatório.`);
+                        return;
+                    }
+                    
+                    let response = { itemText, status: null, observacao: null, value: null };
+                    
+                    const radioOk = itemDiv.querySelector(`input[name="section-${sectionIndex}-item-${itemIndex}"][value="ok"]`);
+                    const radioNaoOk = itemDiv.querySelector(`input[name="section-${sectionIndex}-item-${itemIndex}"][value="nao-ok"]`);
+                    const textField = itemDiv.querySelector(`input[name="section-${sectionIndex}-item-${itemIndex}"][type="text"]`);
+                    const dropdownField = itemDiv.querySelector(`select[name="section-${sectionIndex}-item-${itemIndex}"]`);
+
+
+                    if (radioOk || radioNaoOk) {
+                        const radio = itemDiv.querySelector(`input[name="section-${sectionIndex}-item-${itemIndex}"]:checked`);
+                        if (!radio) {
+                            showModal('Aviso', `Por favor, selecione OK ou NÃO OK para o item "${itemText}".`);
+                            return;
+                        }
+                        response.status = radio.value;
+                        const observacaoTextarea = itemDiv.querySelector(`textarea[name="obs-section-${sectionIndex}-item-${itemIndex}"]`);
+                        response.observacao = observacaoTextarea ? observacaoTextarea.value : '';
+                        if (response.status === 'nao-ok' && response.observacao.trim() === '') {
+                             showModal('Aviso', `O campo de observação é obrigatório para o item "${itemText}" (NÃO OK).`);
+                             return;
+                        }
+                    } else if (textField) {
+                        if (textField.value.trim() === '') {
+                            showModal('Aviso', `O campo de texto para o item "${itemText}" é obrigatório.`);
+                            return;
+                        }
+                        response.value = textField.value;
+                    } else if (dropdownField) {
+                        if (dropdownField.value.trim() === '') {
+                            showModal('Aviso', `Por favor, selecione uma opção para o item "${itemText}".`);
+                            return;
+                        }
+                        response.value = dropdownField.value;
+                    }
+                    sectionResponses.push(response);
+                }
+                sections.push({ sectionTitle, items: sectionResponses });
+            }
+            responseData.checklist.sections = sections;
+
+            try {
+                const docRef = doc(db, COLLECTIONS.APPLIED_CHECKLISTS, responseData.frota);
+                await retryWithExponentialBackoff(() => setDoc(docRef, responseData, { merge: false }));
+                showToast('Respostas salvas com sucesso!', 'success');
+                renderAplicadorForm({ id: checklistId, title: checklistTitle, sections: [] });
+                document.getElementById('aplicador-form-container').classList.add('hidden');
+                document.querySelectorAll('#tag-cloud-aplicador .tag-button').forEach(btn => btn.classList.remove('active', 'bg-blue-500', 'text-white'));
+            } catch (error) {
+                console.error("Erro ao salvar a resposta do aplicador:", error);
+                if (error.code === 'permission-denied') {
+                    showModal('Erro de Permissão', 'Você não tem permissão para salvar este checklist.');
+                } else {
+                    showModal('Erro', 'Não foi possível salvar as respostas. Tente novamente.');
+                }
+            }
+        });
+
+        // --- ABA NOVOS (Criação/Edição) ---
+
+        const createNewSectionDivHtml = (sectionTitle = '') => {
+            return `
+                <div class="section-card p-4 bg-gray-50 rounded-lg shadow-inner mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block flex-grow mr-4">
+                            <span class="text-sm font-medium text-gray-700">Título da Seção</span>
+                            <input type="text" name="section-title" value="${sectionTitle}" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
+                        </label>
+                        <button type="button" class="remove-section-btn text-red-500 hover:text-red-700 text-2xl" title="Remover Seção">&times;</button>
+                    </div>
+                    <div class="items-container space-y-2">
+                        ${createNewItemDivHtml()}
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <button type="button" class="add-item-btn bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-semibold py-1 px-3 rounded-full shadow-sm"><i class="fas fa-plus-circle mr-1"></i> Adicionar Item</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        const createNewItemDivHtml = (item = { itemText: '', itemType: 'radio', itemOptions: '' }) => {
+            const itemOptionsHiddenClass = item.itemType === 'dropdown' ? '' : 'hidden';
+            return `
+                <div class="flex items-center space-x-2">
+                    <input type="text" name="item-text" value="${item.itemText || ''}" placeholder="Texto do item" class="flex-grow rounded-md border border-gray-400 shadow-sm text-sm" required>
+                    <select name="item-type" class="rounded-md border border-gray-400 shadow-sm text-sm">
+                        <option value="radio" ${item.itemType === 'radio' ? 'selected' : ''}>OK/NÃO OK</option>
+                        <option value="texto" ${item.itemType === 'texto' ? 'selected' : ''}>Texto</option>
+                        <option value="dropdown" ${item.itemType === 'dropdown' ? 'selected' : ''}>Menu Suspenso</option>
+                    </select>
+                    <button type="button" class="remove-item-btn text-red-500 hover:text-red-700 text-2xl" title="Remover Item">&times;</button>
+                    <div class="item-options-container ${itemOptionsHiddenClass} mt-2 w-full">
+                        <label class="block text-sm font-medium text-gray-700">Opções (separadas por vírgula)</label>
+                        <textarea name="item-options" rows="2" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm text-sm" placeholder="Ex: Opção A, Opção B, Opção C">${item.itemOptions || ''}</textarea>
+                    </div>
+                </div>
+            `;
+        };
+
+        const attachDynamicListeners = (parentDiv) => {
+            parentDiv.querySelectorAll('select[name="item-type"]').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const itemDiv = e.target.closest('.flex.items-center.space-x-2');
+                    const itemOptionsContainer = itemDiv.querySelector('.item-options-container');
+                    const textarea = itemOptionsContainer.querySelector('textarea');
+                    if (e.target.value === 'dropdown') {
+                        itemOptionsContainer.classList.remove('hidden');
+                        textarea.setAttribute('required', 'required');
+                    } else {
+                        itemOptionsContainer.classList.add('hidden');
+                        textarea.removeAttribute('required');
+                    }
+                });
+            });
+
+            parentDiv.querySelectorAll('.remove-item-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const itemDiv = e.target.closest('.flex.items-center.space-x-2');
+                    itemDiv.remove();
+                });
+            });
+
+            parentDiv.querySelectorAll('.remove-section-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const sectionDiv = e.target.closest('.section-card');
+                    sectionDiv.remove();
+                });
+            });
+
+            parentDiv.querySelectorAll('.add-item-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const sectionDiv = e.target.closest('.section-card');
+                    addItemToSection(sectionDiv);
+                });
+            });
+        };
+
+        const addSectionToForm = () => {
+            const sectionsContainer = document.getElementById('sections-container');
+            const newSectionWrapper = document.createElement('div');
+            newSectionWrapper.innerHTML = createNewSectionDivHtml();
+            const newSectionDiv = newSectionWrapper.firstElementChild;
+            sectionsContainer.appendChild(newSectionDiv);
+            attachDynamicListeners(newSectionDiv);
+        };
+
+        const addItemToSection = (sectionDiv) => {
+            const itemsContainer = sectionDiv.querySelector('.items-container');
+            const newItemWrapper = document.createElement('div');
+            newItemWrapper.innerHTML = createNewItemDivHtml();
+            const newItemDiv = newItemWrapper.firstElementChild;
+            itemsContainer.appendChild(newItemDiv);
+            attachDynamicListeners(newItemDiv);
+        };
+
+        const renderChecklistFormNovos = (checklist = { id: null, title: '', sections: [] }) => {
+            console.log('renderChecklistFormNovos called with checklist:', JSON.parse(JSON.stringify(checklist)));
+            const form = document.getElementById('novos-checklist-form');
+            const titleInput = document.getElementById('checklist-title');
+            const sectionsContainer = document.getElementById('sections-container');
+            const novosTitle = document.getElementById('novos-title');
+
+            form.setAttribute('data-checklist-id', checklist.id || '');
+            novosTitle.textContent = checklist.id ? `Editando: ${checklist.title}` : 'Novo Checklist';
+            titleInput.value = checklist.title;
+            sectionsContainer.innerHTML = '';
+            console.log('SectionsContainer HTML after clear:', sectionsContainer.innerHTML);
+
+            if (checklist.id) {
+                document.getElementById('delete-selected-checklist-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('delete-selected-checklist-btn').classList.add('hidden');
+            }
+
+            if (checklist.sections.length === 0) {
+                addSectionToForm();
+            } else {
+                checklist.sections.forEach((section) => {
+                    const sectionWrapper = document.createElement('div');
+                    sectionWrapper.innerHTML = createNewSectionDivHtml(section.sectionTitle);
+                    const sectionDiv = sectionWrapper.firstElementChild;
+                    const itemsContainer = sectionDiv.querySelector('.items-container');
+                    itemsContainer.innerHTML = '';
+                    
+                    section.items.forEach(item => {
+                        const itemWrapper = document.createElement('div');
+                        itemWrapper.innerHTML = createNewItemDivHtml(item);
+                        const itemDiv = itemWrapper.firstElementChild;
+                        itemsContainer.appendChild(itemDiv);
+                        attachDynamicListeners(itemDiv);
+                    });
+                    sectionsContainer.appendChild(sectionDiv);
+                    attachDynamicListeners(sectionDiv);
+                });
+            }
+        };
+
+        const getFormDataNovos = () => {
+            const form = document.getElementById('novos-checklist-form');
+            const title = form.querySelector('#checklist-title').value;
+            const sections = [];
+            form.querySelectorAll('.section-card').forEach(sectionDiv => {
+                const sectionTitle = sectionDiv.querySelector('input[name="section-title"]').value;
+                const items = [];
+                sectionDiv.querySelectorAll('.items-container > div').forEach(itemDiv => {
+                    const itemText = itemDiv.querySelector('input[name="item-text"]').value;
+                    const itemType = itemDiv.querySelector('select[name="item-type"]').value;
+                    let itemOptions = '';
+                    if (itemType === 'dropdown') {
+                        itemOptions = itemDiv.querySelector('textarea[name="item-options"]').value;
+                    }
+                    items.push({ itemText, itemType, itemOptions });
+                });
+                sections.push({ sectionTitle, items });
+            });
+            return { title, sections };
+        };
+
+        document.getElementById('novos-checklist-form').addEventListener('click', (e) => {
+            if (e.target.id === 'add-section-btn' || e.target.closest('#add-section-btn')) {
+                addSectionToForm();
+            }
+            else if (e.target.classList.contains('remove-item-btn') || e.target.closest('.remove-item-btn')) {
+                const itemDiv = e.target.closest('.flex.items-center.space-x-2');
+                itemDiv.remove();
+            } else if (e.target.classList.contains('remove-section-btn') || e.target.closest('.remove-section-btn')) {
+                const sectionDiv = e.target.closest('.section-card');
+                sectionDiv.remove();
+            }
+        });
+
+        document.getElementById('save-new-checklist-btn').addEventListener('click', async () => {
+            if (!currentUser) {
+                showModal('Erro de Permissão', 'Você precisa estar logado para criar/editar checklists.');
+                console.warn('Operação negada: Usuário não autenticado para salvar checklist.');
+                return;
+            }
+            if (!['lider', 'pcma', 'master'].includes(currentUser.nivel)) {
+                showModal('Erro de Permissão', 'Seu nível de acesso não permite criar/editar checklists.');
+                console.warn(`Operação negada: Usuário ${currentUser.firebaseUid} (${currentUser.nivel}) tentou salvar checklist sem permissão.`);
+                return;
+            }
+
+            const formData = getFormDataNovos();
+            
+            if (formData.title.trim() === '') {
+                showModal('Aviso', 'O título do checklist não pode ser vazio.');
+                return;
+            }
+
+            if (formData.sections.length === 0) {
+                showModal('Aviso', 'O checklist deve conter pelo menos uma seção.');
+                return;
+            }
+
+            for (const section of formData.sections) {
+                if (section.sectionTitle.trim() === '') {
+                    showModal('Aviso', 'Todos os títulos de seção devem ser preenchidos.');
+                    return;
+                }
+                if (section.items.length === 0) {
+                    showModal('Aviso', `A seção "${section.sectionTitle}" deve conter pelo menos um item.`);
+                    return;
+                }
+                for (const item of section.items) {
+                    if (item.itemText.trim() === '') {
+                        showModal('Aviso', `Todos os itens na seção "${section.sectionTitle}" devem ter um texto.`);
+                        return;
+                    }
+                    if (item.itemType === 'dropdown' && item.itemOptions.trim() === '') {
+                        showModal('Aviso', `O item "${item.itemText}" do tipo "Menu Suspenso" precisa ter opções definidas (separadas por vírgula).`);
+                        return;
+                    }
+                }
+            }
+
+            const form = document.getElementById('novos-checklist-form');
+            const checklistId = form.getAttribute('data-checklist-id');
+
+            const dataToSave = {
+                ...formData,
+                criadoPor: currentUser.id,
+                dataCriacao: new Date().toISOString()
+            };
+
+            console.log("Dados do checklist sendo salvos:", JSON.stringify(dataToSave, null, 2));
+
+            try {
+                if (checklistId) {
+                    const docRef = doc(db, COLLECTIONS.DYNAMIC_CHECKLISTS, checklistId);
+                    await retryWithExponentialBackoff(() => setDoc(docRef, dataToSave, { merge: false }));
+                    showModal('Sucesso', 'Checklist atualizado com sucesso!');
+                } else {
+                    const docRef = doc(db, COLLECTIONS.DYNAMIC_CHECKLISTS, formData.title);
+                    await retryWithExponentialBackoff(() => setDoc(docRef, dataToSave));
+                    showModal('Sucesso', 'Novo checklist salvo com sucesso!');
+                }
+                renderChecklistFormNovos();
+            }
+            catch (error) {
+                console.error("Erro ao salvar o checklist:", error);
+                if (error.code === 'permission-denied') {
+                    showModal('Erro de Permissão', 'Você não tem permissão para salvar este checklist.');
+                } else {
+                    showModal('Erro', 'Não foi possível salvar o checklist. Por favor, tente novamente.');
+                }
+            }
+        });
+
+        document.getElementById('delete-selected-checklist-btn').addEventListener('click', () => {
+            if (!currentUser) {
+                showModal('Erro de Permissão', 'Você precisa estar logado para excluir checklists.');
+                console.warn('Operação negada: Usuário não autenticado para excluir checklist.');
+                return;
+            }
+            if (!['lider', 'pcma', 'master'].includes(currentUser.nivel)) {
+                showModal('Erro de Permissão', 'Seu nível de acesso não permite excluir checklists.');
+                console.warn(`Operação negada: Usuário ${currentUser.firebaseUid} (${currentUser.nivel}) tentou excluir checklist sem permissão.`);
+                return;
+            }
+
+            const form = document.getElementById('novos-checklist-form');
+            const selectedId = form.getAttribute('data-checklist-id');
+            const selectedTitle = document.getElementById('checklist-title').value;
+
+            if (selectedId) {
+                showConfirmModal('Excluir Checklist', `Tem certeza que deseja excluir o checklist "${selectedTitle}"?`, async () => {
+                    try {
+                        const docRef = doc(db, COLLECTIONS.DYNAMIC_CHECKLISTS, selectedId);
+                        await retryWithExponentialBackoff(() => deleteDoc(docRef));
+                        showModal('Sucesso', 'Checklist excluído com sucesso!');
+                        renderChecklistFormNovos();
+                        document.querySelectorAll('#tag-cloud-novos .tag-button').forEach(btn => btn.classList.remove('active'));
+                        document.getElementById('delete-selected-checklist-btn').classList.add('hidden');
+                    } catch (error) {
+                        console.error("Erro ao excluir o checklist:", error);
+                        if (error.code === 'permission-denied') {
+                            showModal('Erro de Permissão', 'Você não tem permissão para excluir este checklist.');
+                        } else {
+                            showModal('Erro', 'Não foi possível excluir o checklist. Por favor, tente novamente.');
+                        }
+                    }
+                });
+            } else {
+                showModal('Aviso', 'Nenhum checklist selecionado para exclusão.');
+            }
+        });
+        
+        // --- ABA LÍDER e PCMA ---
+
+        const listenForPendingChecklists = (role) => {
+            const q = query(
+                collection(db, COLLECTIONS.APPLIED_CHECKLISTS),
+                where(`status.${role}`, "==", "pendente")
+            );
+            onSnapshot(q, (snapshot) => {
+                const checklists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderChecklistsForApproval(role, checklists);
+            }, (error) => {
+                console.error(`Erro ao carregar checklists pendentes para ${role}:`, error);
+            });
+        };
+
+        const renderChecklistsForApproval = (role, checklists) => {
+            const container = document.getElementById(`${role}-checklists-container`);
+            container.innerHTML = '';
+            
+            const checksToShow = checklists.slice(0, PAGINATION_LIMIT);
+
+            if (checksToShow.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500">Nenhum checklist pendente para validação.</p>';
+                return;
+            }
+
+            checksToShow.forEach(checklist => {
+                const checklistDiv = document.createElement('div');
+                checklistDiv.classList.add('p-6', 'bg-white', 'rounded-lg', 'shadow-md', 'mb-4');
+                checklistDiv.innerHTML = `
+                    <h3 class="text-lg font-bold mb-2">${checklist.checklist.title} - Frota: ${checklist.frota}</h3>
+                    <p class="text-sm text-gray-600"><strong>Aplicador:</strong> ${checklist.aplicador.nome} (${checklist.aplicador.id})</p>
+                    <p class="text-sm text-gray-600"><strong>Nº OS:</strong> ${checklist.os}</p>
+                    <p class="text-sm text-gray-600 mb-4"><strong>Data:</strong> ${new Date(checklist.criadoEm).toLocaleString('pt-BR')}</p>
+                    <button class="view-report-btn bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-full">Visualizar Relatório</button>
+                    <div class="mt-4 flex space-x-2">
+                        <button class="approve-btn bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full transition-colors">Aprovar</button>
+                        <button class="reject-btn bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full transition-colors">Reprovar</button>
+                    </div>
+                `;
+                
+                checklistDiv.querySelector('.view-report-btn').addEventListener('click', () => renderReportModal(checklist));
+                checklistDiv.querySelector('.approve-btn').addEventListener('click', () => updateChecklistStatus(checklist.id, role, 'aprovado'));
+                checklistDiv.querySelector('.reject-btn').addEventListener('click', () => updateChecklistStatus(checklist.id, role, 'reprovado'));
+                
+                container.appendChild(checklistDiv);
+            });
+        };
+        
+        const updateChecklistStatus = async (checklistId, role, status) => {
+            if (!currentUser) {
+                showModal('Erro de Permissão', 'Você precisa estar logado para atualizar o status do checklist.');
+                console.warn('Operação negada: Usuário não autenticado para atualizar status.');
+                return;
+            }
+            if (!['lider', 'pcma', 'master'].includes(currentUser.nivel)) {
+                showModal('Erro de Permissão', 'Seu nível de acesso não permite atualizar o status deste checklist.');
+                console.warn(`Operação negada: Usuário ${currentUser.firebaseUid} (${currentUser.nivel}) tentou atualizar status sem permissão.`);
+                return;
+            }
+
+            try {
+                const docRef = doc(db, COLLECTIONS.APPLIED_CHECKLISTS, checklistId);
+                await retryWithExponentialBackoff(() => updateDoc(docRef, { [`status.${role}`]: status }));
+                showToast(`Checklist ${status} por ${role} com sucesso!`, 'success');
+            }
+            catch (error) {
+                console.error(`Erro ao atualizar status do checklist para ${role}:`, error);
+                if (error.code === 'permission-denied') {
+                    showModal('Erro de Permissão', 'Você não tem permissão para atualizar o status deste checklist.');
+                } else {
+                    showModal('Erro', `Não foi possível atualizar o status. Tente novamente.`);
+                }
+            }
+        };
+
+        // --- ABA REALIZADOS ---
+
+        let allAppliedChecklists = [];
+        let currentPageRealizados = 1;
+        
+        const renderRealizadosList = (page) => {
+            const container = document.getElementById('realizados-list-container');
+            const paginationContainer = document.getElementById('realizados-pagination');
+            container.innerHTML = '';
+            paginationContainer.innerHTML = '';
+            
+            const start = (page - 1) * PAGINATION_LIMIT;
+            const end = start + PAGINATION_LIMIT;
+            const checksToDisplay = allAppliedChecklists.slice(start, end);
+
+            if (checksToDisplay.length === 0 && page === 1) {
+                container.innerHTML = '<p class="text-center text-gray-500">Nenhum checklist realizado ainda.</p>';
+                return;
+            }
+
+            checksToDisplay.forEach(checklist => {
+                const statusLider = checklist.status.lider;
+                const statusPcma = checklist.status.pcma;
+                
+                const statusLiderColor = statusLider === 'aprovado' ? 'bg-green-200 text-green-800' :
+                                       statusLider === 'reprovado' ? 'bg-red-200 text-red-800' :
+                                       'bg-yellow-200 text-yellow-800';
+                
+                const statusPcmaColor = statusPcma === 'aprovado' ? 'bg-green-200 text-green-800' :
+                                       statusPcma === 'reprovado' ? 'bg-red-200 text-red-800' :
+                                       'bg-yellow-200 text-yellow-800';
+
+                const checklistDiv = document.createElement('div');
+                checklistDiv.classList.add('p-6', 'bg-white', 'rounded-lg', 'shadow-md', 'mb-4');
+                checklistDiv.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <p class="text-sm text-gray-600"><strong>Frota:</strong> ${checklist.frota}</p>
+                        <p class="text-sm text-gray-600"><strong>Nº OS:</strong> ${checklist.os}</p>
+                        <p class="text-sm text-gray-600"><strong>Aplicador:</strong> ${checklist.aplicador.nome} (${checklist.aplicador.id})</p>
+                        <p class="text-sm text-gray-600"><strong>Mecânico:</strong> ${checklist.mecanico}</p>
+                        <p class="text-sm text-gray-600"><strong>Data:</strong> ${new Date(checklist.criadoEm).toLocaleDateString('pt-BR')}</p>
+                        <p class="text-sm text-gray-600"><strong>Hora Inicial:</strong> ${checklist.horaInicial}</p>
+                        <p class="text-sm text-gray-600"><strong>Hora Final:</strong> ${checklist.horaFinal}</p>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusLiderColor}">Líder: ${statusLider}</span>
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusPcmaColor}">PCMA: ${statusPcma}</span>
+                        <button class="view-report-btn bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded-full text-sm">Visualizar Relatório</button>
+                    </div>
+                `;
+                
+                checklistDiv.querySelector('.view-report-btn').addEventListener('click', () => renderReportModal(checklist));
+                container.appendChild(checklistDiv);
+            });
+            
+            const pageCount = Math.ceil(allAppliedChecklists.length / PAGINATION_LIMIT);
+            for (let i = 1; i <= pageCount; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.classList.add('px-3', 'py-1', 'rounded-full', 'text-sm', 'font-medium', 'hover:bg-gray-200');
+                if (i === page) {
+                    pageBtn.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+                } else {
+                    pageBtn.classList.add('bg-gray-100', 'text-gray-700');
+                }
+                pageBtn.addEventListener('click', () => {
+                    currentPageRealizados = i;
+                    renderRealizadosList(currentPageRealizados);
+                });
+                paginationContainer.appendChild(pageBtn);
+            }
+        };
+        
+        const listenForAppliedChecklists = () => {
+            const q = query(collection(db, COLLECTIONS.APPLIED_CHECKLISTS));
+            onSnapshot(q, (snapshot) => {
+                allAppliedChecklists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allAppliedChecklists.sort((a, b) => {
+                    const statusA = (a.status.lider === 'pendente' || a.status.pcma === 'pendente');
+                    const statusB = (b.status.lider === 'pendente' || b.status.pcma === 'pendente');
+                    return statusB - statusA;
+                });
+                renderRealizadosList(currentPageRealizados);
+            }, (error) => {
+                console.error("Erro ao carregar checklists realizados:", error);
+            });
+        };
+        
+        const renderReportModal = (checklist) => {
+            const reportContent = document.getElementById('report-content');
+            const reportModal = document.getElementById('report-modal'); 
+            reportContent.innerHTML = '';
+            reportModal.setAttribute('data-id', checklist.id);
+            reportModal.setAttribute('data-frota', checklist.frota);
+            
+            let htmlContent = `
+                <h2 class="text-2xl font-bold mb-4">${checklist.checklist.title}</h2>
+                <p><strong>Frota:</strong> ${checklist.frota}</p>
+                <p><strong>Nº OS:</strong> ${checklist.os}</p>
+                <p><strong>Aplicador:</strong> ${checklist.aplicador.nome} (${checklist.aplicador.id})</p>
+                <p><strong>Mecânico:</strong> ${checklist.mecanico}</p>
+                <p><strong>Data:</strong> ${new Date(checklist.criadoEm).toLocaleDateString('pt-BR')}</p>
+                <p><strong>Hora Inicial:</strong> ${checklist.horaInicial}</p>
+                <p><strong>Hora Final:</strong> ${checklist.horaFinal}</p>
+                <p class="mt-4"><strong>Status Líder:</strong> <span class="font-bold">${checklist.status.lider}</span></p>
+                <p><strong>Status PCMA:</strong> <span class="font-bold">${checklist.status.pcma}</span></p>
+                <hr class="my-4">
+            `;
+            
+            checklist.checklist.sections.forEach(section => {
+                htmlContent += `
+                    <h3 class="text-xl font-bold mt-4 mb-2">${section.sectionTitle}</h3>
+                    <ul class="list-disc list-inside space-y-2">
+                `;
+                section.items.forEach(item => {
+                    let statusHtml = '';
+                    let observacao = item.observacao || '';
+                    if (item.status === 'ok') {
+                        statusHtml = `<span class="text-green-600 font-bold">OK</span>`;
+                    } else if (item.status === 'nao-ok') {
+                        statusHtml = `<span class="text-red-600 font-bold">NÃO OK</span>`;
+                    } else if (typeof item.value === 'boolean') {
+                         statusHtml = `<span class="text-blue-600 font-bold">${item.value ? 'Marcado' : 'Não Marcado'}</span>`;
+                    } else if (item.value) {
+                        statusHtml = `<span class="font-bold">${item.value}</span>`;
+                    }
+
+                    htmlContent += `
+                        <li>
+                            <span>${item.itemText}: ${statusHtml}</span>
+                            ${item.observacao ? `<p class="pl-4 text-sm text-gray-500 italic">Observação: ${item.observacao}</p>` : ''}
+                        </li>
+                    `;
+                });
+                htmlContent += `</ul>`;
+            });
+            
+            reportContent.innerHTML = htmlContent;
+            reportModal.style.display = 'flex';
+        };
+
+        document.getElementById('report-modal-close-btn').addEventListener('click', hideModal);
+        
+        // --- ABA CADASTRO ---
+
+        let allUsers = [];
+        let currentPageUsers = 1;
+
+        const listenForUsers = () => {
+            const q = query(collection(db, COLLECTIONS.USERS));
+            onSnapshot(q, (snapshot) => {
+                // O ID do documento agora é o firebaseUid
+                allUsers = snapshot.docs.map(doc => ({ firebaseUid: doc.id, ...doc.data() }));
+                renderUserList(currentPageUsers);
+            }, (error) => {
+                console.error("Erro ao carregar usuários:", error);
+            });
+        };
+
+        const renderUserList = (page, searchTerm = '') => {
+            const userListContainer = document.getElementById('user-list');
+            const paginationContainer = document.getElementById('user-pagination');
+            userListContainer.innerHTML = '';
+            paginationContainer.innerHTML = '';
+
+            const isMaster = currentUser && currentUser.nivel === 'master';
+            if (!isMaster) {
+                userListContainer.innerHTML = '<p class="text-center text-gray-500">Você não tem permissão para visualizar usuários.</p>';
+                document.getElementById('add-user-form').classList.add('hidden');
+                document.getElementById('access-level-container').classList.add('hidden');
+                document.getElementById('user-search').classList.add('hidden');
+                document.getElementById('import-xlsx-btn').classList.add('hidden');
+                document.getElementById('import-csv-btn').classList.add('hidden');
+                return;
+            } else {
+                document.getElementById('add-user-form').classList.remove('hidden');
+                document.getElementById('access-level-container').classList.remove('hidden');
+                document.getElementById('user-search').classList.remove('hidden');
+                document.getElementById('import-xlsx-btn').classList.remove('hidden');
+                document.getElementById('import-csv-btn').classList.remove('hidden');
+            }
+
+            const filteredUsers = allUsers.filter(user => 
+                user.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.id.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            const start = (page - 1) * PAGINATION_LIMIT;
+            const end = start + PAGINATION_LIMIT;
+            const usersToDisplay = filteredUsers.slice(start, end);
+
+            if (usersToDisplay.length === 0 && page === 1) {
+                userListContainer.innerHTML = '<p class="text-center text-gray-500">Nenhum usuário encontrado.</p>';
+                return;
+            }
+
+            usersToDisplay.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.classList.add('p-4', 'bg-gray-100', 'rounded-lg', 'flex', 'justify-between', 'items-center', 'shadow-sm');
+                userDiv.innerHTML = `
+                    <div>
+                        <p class="font-semibold">${user.nome} (${user.usuario})</p>
+                        <p class="text-sm text-gray-600">ID USINA: ${user.id}</p>
+                        <p class="text-sm text-gray-600">UID Firebase: ${user.firebaseUid}</p>
+                        <p class="text-sm text-gray-600">Nível: ${user.nivel}</p>
+                        <p class="text-sm text-gray-600">Ativo: ${user.ativo ? 'Sim' : 'Não'}</p>
+                        <p class="text-sm text-gray-600">Criado em: ${user.criadoEm ? new Date(user.criadoEm.toDate()).toLocaleString('pt-BR') : 'N/A'}</p>
+                    </div>
+                `;
+                
+                const actionDiv = document.createElement('div');
+                
+                // Botão de Excluir Usuário
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = `<i class="fas fa-trash-alt text-red-500 hover:text-red-700"></i>`;
+                deleteBtn.title = `Excluir usuário ${user.nome}`;
+                
+                // Esconde o botão de exclusão se for o próprio usuário logado ou se for um master tentando excluir outro master
+                if (currentUser.firebaseUid === user.firebaseUid || (currentUser.nivel === 'master' && user.nivel === 'master' && currentUser.firebaseUid !== user.firebaseUid)) {
+                    deleteBtn.classList.add('hidden');
+                }
+
+                deleteBtn.addEventListener('click', async () => {
+                    console.log(`[DEBUG] Tentando excluir usuário. Usuário logado UID: ${currentUser.firebaseUid}, Nível: ${currentUser.nivel}. Usuário alvo UID: ${user.firebaseUid}, Nível: ${user.nivel}.`);
+
+                    // 1. Verificação local de permissão
+                    let canDelete = false;
+                    let reason = '';
+
+                    if (!currentUser) {
+                        reason = 'Você precisa estar logado para excluir usuários.';
+                    } else if (currentUser.firebaseUid === user.firebaseUid) { // Auto-exclusão
+                        canDelete = true;
+                        reason = 'Auto-exclusão permitida.';
+                    } else if (currentUser.nivel === 'master') { // Master tentando excluir outro
+                        // 2. Confirmação no Firestore (para obter o nível do usuário alvo)
+                        try {
+                            const targetUserDocRef = doc(db, COLLECTIONS.USERS, user.firebaseUid);
+                            const targetUserDocSnap = await retryWithExponentialBackoff(() => getDoc(targetUserDocRef));
+                            if (targetUserDocSnap.exists()) {
+                                const targetUserData = targetUserDocSnap.data();
+                                if (targetUserData.nivel === 'master') {
+                                    reason = 'Um usuário master não pode excluir outro usuário master.';
+                                } else {
+                                    canDelete = true;
+                                    reason = 'Usuário master pode excluir não-master.';
+                                }
+                            } else {
+                                reason = 'Usuário alvo não encontrado no Firestore.';
+                            }
+                        } catch (fetchError) {
+                            console.error("Erro ao buscar dados do usuário alvo para verificação de exclusão:", fetchError);
+                            showModal('Erro', 'Não foi possível verificar as permissões. Tente novamente.');
+                            return;
+                        }
+                    } else {
+                        reason = 'Você não tem permissão para excluir usuários.';
+                    }
+
+                    console.log(`[DEBUG] Resultado da verificação local: ${canDelete}. Motivo: ${reason}`);
+
+                    if (!canDelete) {
+                        showModal('Erro de Permissão', reason);
+                        return;
+                    }
+
+                    showConfirmModal('Excluir Usuário', `Tem certeza que deseja excluir o usuário "${user.nome}"?`, async () => {
+                        try {
+                            const docRef = doc(db, COLLECTIONS.USERS, user.firebaseUid); // ID do documento é o firebaseUid
+                            await retryWithExponentialBackoff(() => deleteDoc(docRef));
+                            showToast('Usuário excluído com sucesso!');
+                            console.log(`[DEBUG] Usuário ${user.firebaseUid} excluído com sucesso por ${currentUser.firebaseUid}.`);
+                        } catch (error) {
+                            console.error("Erro ao excluir usuário:", error);
+                            if (error.code === 'permission-denied') {
+                                showModal('Erro de Permissão', 'Você não tem permissão para excluir este usuário. Verifique as regras de segurança.');
+                                console.error(`[DEBUG] Falha de permissão ao excluir usuário ${user.firebaseUid}. Usuário logado UID: ${currentUser.firebaseUid}, Nível: ${currentUser.nivel}.`);
+                            } else {
+                                showModal('Erro', 'Não foi possível excluir o usuário. Tente novamente.');
+                            }
+                        }
+                    });
+                });
+                actionDiv.appendChild(deleteBtn);
+
+                // Botão de Editar Usuário
+                const editBtn = document.createElement('button');
+                editBtn.innerHTML = `<i class="fas fa-edit text-blue-500 hover:text-blue-700 ml-4"></i>`;
+                editBtn.title = `Editar usuário ${user.nome}`;
+                editBtn.addEventListener('click', () => {
+                    // Preenche o formulário para edição
+                    document.getElementById('new-user-name').value = user.nome;
+                    document.getElementById('new-user-id').value = user.id;
+                    document.getElementById('new-user-username').value = user.usuario;
+                    document.getElementById('new-user-password').value = user.senha; // Cuidado ao preencher senhas
+                    document.getElementById('new-user-level').value = user.nivel;
+                    document.getElementById('add-user-form').setAttribute('data-editing-firebase-uid', user.firebaseUid); // Armazena o firebaseUid do usuário a ser editado
+                });
+                actionDiv.appendChild(editBtn);
+
+                userDiv.appendChild(actionDiv);
+                userListContainer.appendChild(userDiv);
+            });
+
+            const pageCount = Math.ceil(filteredUsers.length / PAGINATION_LIMIT);
+            for (let i = 1; i <= pageCount; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.classList.add('px-3', 'py-1', 'rounded-full', 'text-sm', 'font-medium', 'hover:bg-gray-200');
+                if (i === page) {
+                    pageBtn.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+                } else {
+                    pageBtn.classList.add('bg-gray-100', 'text-gray-700');
+                }
+                pageBtn.addEventListener('click', () => {
+                    currentPageUsers = i;
+                    renderUserList(currentPageUsers, searchTerm);
+                });
+                paginationContainer.appendChild(pageBtn);
+            }
+        };
+
+        document.getElementById('user-search').addEventListener('input', (e) => {
+            currentPageUsers = 1;
+            renderUserList(currentPageUsers, e.target.value);
+        });
+
+        document.getElementById('add-user-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const editingFirebaseUid = form.getAttribute('data-editing-firebase-uid');
+
+            // Crie uma cópia dos dados para evitar modificações diretas no objeto original
+            const userData = {
+                id: form['new-user-id'].value,
+                nome: form['new-user-name'].value,
+                usuario: form['new-user-username'].value,
+                senha: form['new-user-password'].value,
+                nivel: form['new-user-level'].value,
+                ativo: true,
+            };
+
+            if (!currentUser) {
+                showModal('Erro de Permissão', 'Você precisa estar logado para adicionar/editar usuários.');
+                console.warn('Operação negada: Usuário não autenticado para salvar usuário.');
+                return;
+            }
+
+            // 1. Verificação local de permissão para criar/atualizar
+            let canSave = false;
+            let reason = '';
+
+            if (editingFirebaseUid) { // Atualização
+                if (currentUser.firebaseUid === editingFirebaseUid) { // Auto-edição
+                    // Permite auto-edição, mas impede que o usuário mude seu próprio nível se não for master
+                    if (currentUser.nivel !== 'master' && userData.nivel !== currentUser.nivel) {
+                        reason = 'Você não pode alterar seu próprio nível de acesso.';
+                    } else {
+                        canSave = true;
+                        reason = 'Auto-edição permitida.';
+                    }
+                } else if (currentUser.nivel === 'master') { // Master editando outro
+                    // Master pode editar qualquer uno, exceto mudar o nível de outro master para não-master
+                    try {
+                        const targetUserDocRef = doc(db, COLLECTIONS.USERS, editingFirebaseUid);
+                        const targetUserDocSnap = await retryWithExponentialBackoff(() => getDoc(targetUserDocRef));
+                        if (targetUserDocSnap.exists()) {
+                            const targetUserData = targetUserDocSnap.data();
+                            if (targetUserData.nivel === 'master' && userData.nivel !== 'master') {
+                                reason = 'Um usuário master não pode rebaixar outro usuário master.';
+                            } else {
+                                canSave = true;
+                                reason = 'Master editando outro usuário permitido.';
+                            }
+                        } else {
+                            reason = 'Usuário alvo não encontrado para edição.';
+                        }
+                    } catch (fetchError) {
+                        console.error("Erro ao buscar dados do usuário alvo para verificação de edição:", fetchError);
+                        showModal('Erro', 'Não foi possível verificar as permissões. Tente novamente.');
+                        return;
+                    }
+                } else {
+                    reason = 'Você não tem permissão para editar outros usuários.';
+                }
+            } else { // Criação
+                if (currentUser.nivel === 'master') {
+                    canSave = true;
+                    reason = 'Master pode criar novos usuários.';
+                } else {
+                    reason = 'Você não tem permissão para criar novos usuários.';
+                }
+            }
+            
+            console.log(`[DEBUG] Resultado da verificação local para salvar usuário: ${canSave}. Motivo: ${reason}`);
+
+            if (!canSave) {
+                showModal('Erro de Permissão', reason);
+                return;
+            }
+            
+            try {
+                let docRef;
+                let message;
+                let finalFirebaseUid;
+
+                if (editingFirebaseUid) {
+                    docRef = doc(db, COLLECTIONS.USERS, editingFirebaseUid);
+                    finalFirebaseUid = editingFirebaseUid;
+                    message = 'Usuário atualizado com sucesso!';
+                    form.removeAttribute('data-editing-firebase-uid');
+                } else {
+                    // Para novos usuários, o ID do documento será um UID Firebase gerado aleatoriamente
+                    finalFirebaseUid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    docRef = doc(db, COLLECTIONS.USERS, finalFirebaseUid);
+                    userData.criadoEm = serverTimestamp(); // Adiciona criadoEm apenas para novos usuários
+                    message = 'Novo usuário salvo com sucesso!';
+                }
+                
+                // Garante que o firebaseAuthUid seja sempre o ID do documento
+                userData.firebaseAuthUid = finalFirebaseUid;
+
+                console.log("Tentando salvar usuário no Firestore. Caminho:", docRef.path, "Dados:", userData); 
+                await retryWithExponentialBackoff(() => setDoc(docRef, userData, { merge: true }));
+                console.log("Usuário salvo com sucesso no Firestore!");
+                showToast(message);
+                form.reset();
+            } catch (error) {
+                console.error("Erro ao salvar usuário no Firestore:", error);
+                if (error.code === 'permission-denied') {
+                    showModal('Erro de Permissão', 'Você não tem permissão para salvar este usuário. Verifique as regras de segurança.');
+                } else {
+                    showModal('Erro de Gravação', 'Não foi possível salvar o usuário no banco de dados. Verifique o console para mais detalhes.');
+                }
+            }
+        });
+
+        // --- Importação em Massa de Usuários ---
+
+        document.getElementById('import-xlsx-btn').addEventListener('click', () => {
+            if (!currentUser || currentUser.nivel !== 'master') {
+                showModal('Erro de Permissão', 'Você não tem permissão para importar usuários.');
+                console.warn(`Operação negada: Usuário ${currentUser ? currentUser.firebaseUid : 'N/A'} (${currentUser ? currentUser.nivel : 'N/A'}) tentou importar XLSX sem permissão.`);
+                return;
+            }
+            document.getElementById('upload-xlsx-input').click();
+        });
+
+        document.getElementById('upload-xlsx-input').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[sheetName];
+                        const json = XLSX.utils.sheet_to_json(worksheet);
+
+                        let successCount = 0;
+                        let errorCount = 0;
+
+                        for (const row of json) {
+                            const firebaseUidForImport = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+                            const userData = {
+                                nome: row.nome,
+                                usuario: row.usuario,
+                                senha: row.senha,
+                                nivel: row.nivelAcesso,
+                                id: row.id,
+                                ativo: true, 
+                                criadoEm: serverTimestamp(),
+                                firebaseAuthUid: firebaseUidForImport // firebaseAuthUid é o ID do documento
+                            };
+
+                            if (!userData.nome || !userData.usuario || !userData.senha || !userData.nivel || !userData.id) {
+                                console.warn("Linha ignorada devido a dados incompletos:", row);
+                                errorCount++;
+                                continue;
+                            }
+
+                            try {
+                                const docRef = doc(db, COLLECTIONS.USERS, firebaseUidForImport); // ID do documento é o firebaseUid
+                                await retryWithExponentialBackoff(() => setDoc(docRef, userData, { merge: true }));
+                                successCount++;
+                            } catch (error) {
+                                console.error("Erro ao salvar usuário da planilha:", userData, error);
+                                errorCount++;
+                            }
+                        }
+                        showModal('Importação Concluída', `Importação de XLSX finalizada. Sucesso: ${successCount}, Erros: ${errorCount}.`);
+                    } catch (error) {
+                        console.error("Erro ao ler arquivo XLSX:", error);
+                        showModal('Erro de Importação', 'Não foi possível ler o arquivo XLSX. Verifique o formato.');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+
+        document.getElementById('import-csv-btn').addEventListener('click', () => {
+            if (!currentUser || currentUser.nivel !== 'master') {
+                showModal('Erro de Permissão', 'Você não tem permissão para importar usuários.');
+                console.warn(`Operação negada: Usuário ${currentUser ? currentUser.firebaseUid : 'N/A'} (${currentUser ? currentUser.nivel : 'N/A'}) tentou importar CSV sem permissão.`);
+                return;
+            }
+            document.getElementById('upload-csv-input').click();
+        });
+
+        document.getElementById('upload-csv-input').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const csvData = e.target.result;
+                        const lines = csvData.split('\n').filter(line => line.trim() !== '');
+                        if (lines.length === 0) {
+                            showModal('Aviso', 'O arquivo CSV está vazio.');
+                            return;
+                        }
+
+                        const headers = lines[0].split(',').map(h => h.trim());
+                        const expectedHeaders = ['nome', 'usuario', 'senha', 'nivelAcesso', 'id'];
+                        
+                        const missingHeaders = expectedHeaders.filter(header => !headers.includes(header));
+                        if (missingHeaders.length > 0) {
+                            showModal('Erro de Formato', `Faltam as seguintes colunas no CSV: ${missingHeaders.join(', ')}. As colunas esperadas são: ${expectedHeaders.join(', ')}.`);
+                            return;
+                        }
+
+                        let successCount = 0;
+                        let errorCount = 0;
+
+                        for (let i = 1; i < lines.length; i++) {
+                            const values = lines[i].split(',').map(v => v.trim());
+                            const rowData = {};
+                            headers.forEach((header, index) => {
+                                rowData[header] = values[index];
+                            });
+
+                            const firebaseUidForImport = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+                            const userData = {
+                                nome: rowData.nome,
+                                usuario: rowData.usuario,
+                                senha: rowData.senha,
+                                nivel: rowData.nivelAcesso,
+                                id: rowData.id,
+                                ativo: true, 
+                                criadoEm: serverTimestamp(),
+                                firebaseAuthUid: firebaseUidForImport // firebaseAuthUid é o ID do documento
+                            };
+
+                            if (!userData.nome || !userData.usuario || !userData.senha || !userData.nivel || !userData.id) {
+                                console.warn("Linha ignorada devido a dados incompletos:", rowData);
+                                errorCount++;
+                                continue;
+                            }
+
+                            try {
+                                const docRef = doc(db, COLLECTIONS.USERS, firebaseUidForImport); // ID do documento é o firebaseUid
+                                await retryWithExponentialBackoff(() => setDoc(docRef, userData, { merge: true }));
+                                successCount++;
+                            } catch (error) {
+                                console.error("Erro ao salvar usuário do CSV:", userData, error);
+                                errorCount++;
+                            }
+                        }
+                        showModal('Importação Concluída', `Importação de CSV finalizada. Sucesso: ${successCount}, Erros: ${errorCount}.`);
+                    } catch (error) {
+                        console.error("Erro ao ler arquivo CSV:", error);
+                        showModal('Erro de Importação', 'Não foi possível ler o arquivo CSV. Verifique o formato.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+
+        // Modal de Alterar Senha
+        document.getElementById('change-password-btn').addEventListener('click', () => {
+            document.getElementById('change-password-modal').style.display = 'flex';
+            document.getElementById('change-password-modal-form').reset();
+        });
+
+        document.getElementById('change-password-modal-cancel-btn').addEventListener('click', hideModal);
+
+        document.getElementById('change-password-modal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const currentPassword = form['current-password-modal'].value;
+            const newPassword = form['new-password-modal'].value;
+            const confirmNewPassword = form['confirm-new-password-modal'].value;
+
+            if (newPassword !== confirmNewPassword) {
+                showModal('Erro', 'A nova senha e a confirmação de senha não coincidem.');
+                return;
+            }
+
+            if (!currentUser) {
+                showModal('Erro', 'Usuário não autenticado. Faça login novamente.');
+                return;
+            }
+
+            try {
+                // O docRef agora usa o firebaseUid como ID do documento
+                const userDocRef = doc(db, COLLECTIONS.USERS, currentUser.firebaseUid);
+                const userDocSnap = await retryWithExponentialBackoff(() => getDoc(userDocRef));
+                const userData = userDocSnap.data();
+
+                if (userData.senha !== currentPassword) {
+                    showModal('Erro', 'A senha atual está incorreta.');
+                    return;
+                }
+
+                await retryWithExponentialBackoff(() => updateDoc(userDocRef, { senha: newPassword }));
+                showToast('Senha alterada com sucesso!', 'success');
+                hideModal();
+            } catch (error) {
+                console.error("Erro ao alterar senha:", error);
+                if (error.code === 'permission-denied') {
+                    showModal('Erro de Permissão', 'Você não tem permissão para alterar sua senha.');
+                } else {
+                    showModal('Erro', 'Não foi possível alterar a senha. Tente novamente.');
+                }
+            }
+        });
+
+        togglePasswordVisibility('#current-password-modal', '#toggle-current-password-modal');
+        togglePasswordVisibility('#new-password-modal', '#toggle-new-password-modal');
+        togglePasswordVisibility('#confirm-new-password-modal', '#toggle-confirm-new-password-modal');
+
+
+        // --- Event Listeners Globais ---
+        document.getElementById('modal-close-btn').addEventListener('click', hideModal);
+        document.getElementById('confirm-modal-cancel-btn').addEventListener('click', hideModal);
+        
+        document.getElementById('aplicador-tab').addEventListener('click', () => switchTab('aplicador'));
+        document.getElementById('lider-tab').addEventListener('click', () => switchTab('lider'));
+        document.getElementById('pcma-tab').addEventListener('click', () => switchTab('pcma'));
+        document.getElementById('realizados-tab').addEventListener('click', () => { switchTab('realizados'); listenForAppliedChecklists(); });
+        document.getElementById('novos-tab').addEventListener('click', () => switchTab('novos'));
+        document.getElementById('cadastro-tab').addEventListener('click', () => switchTab('cadastro'));
+        
+        // --- Funções de Impressão e Exportação ---
+
+        document.getElementById('export-pdf-btn').addEventListener('click', async () => {
+            const reportContent = document.getElementById('report-content');
+            const frotaNumber = document.getElementById('report-modal').getAttribute('data-frota') || '000000';
+            try {
+                const canvas = await html2canvas(reportContent, { scale: 2 });
+                const imgData = canvas.toDataURL('image/png');
+
+                const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210;
+                const pageHeight = 297;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                pdf.save(`relatorio-checklist - Frota -${frotaNumber}.pdf`);
+                showToast('Exportado para PDF com sucesso!', 'success');
+            } catch (error) {
+                console.error("Erro ao exportar PDF:", error);
+                showModal('Erro', 'Não foi possível exportar o relatório para PDF. Por favor, tente novamente.');
+            }
+        });
+
+        document.getElementById('export-xlsx-btn').addEventListener('click', () => {
+            const checklist = allAppliedChecklists.find(c => c.id === document.getElementById('report-modal').getAttribute('data-id'));
+            const frotaNumber = document.getElementById('report-modal').getAttribute('data-frota') || '000000';
+            if (!checklist) {
+                showModal('Erro', 'Checklist não encontrado para exportação.');
+                return;
+            }
+            
+            const data = [];
+            data.push(['Título', checklist.checklist.title]);
+            data.push(['Frota', checklist.frota]);
+            data.push(['Nº OS', checklist.os]);
+            data.push(['Aplicador Nome', checklist.aplicador.nome]);
+            data.push(['Aplicador ID', checklist.aplicador.id]);
+            data.push(['Mecânico', checklist.mecanico]);
+            data.push(['Data', new Date(checklist.criadoEm).toLocaleDateString('pt-BR')]);
+            data.push(['Hora Inicial', checklist.horaInicial]);
+            data.push(['Hora Final', checklist.horaFinal]);
+            data.push(['Status Líder', checklist.status.lider]);
+            data.push(['Status PCMA', checklist.status.pcma]);
+            data.push([]);
+            data.push(['Seção', 'Item', 'Resposta', 'Observação']);
+            
+            checklist.checklist.sections.forEach(section => {
+                section.items.forEach(item => {
+                    let resposta = '';
+                    let observacao = item.observacao || '';
+                    if (item.status) {
+                        resposta = item.status.toUpperCase();
+                    } else if (item.value) {
+                        resposta = item.value;
+                    }
+                    data.push([section.sectionTitle, item.itemText, resposta, observacao]);
+                });
+            });
+
+            try {
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Relatório");
+                XLSX.writeFile(wb, `relatorio-checklist - Frota -${frotaNumber}.xlsx`);
+                showToast('Exportado para XLSX!', 'success');
+            } catch (error) {
+                console.error("Erro ao exportar XLSX:", error);
+                showModal('Erro', 'Não foi possível exportar o relatório para XLSX. Por favor, tente novamente.');
+            }
+        });
+
+        // --- Funções de Avatar ---
+        document.getElementById('user-avatar').addEventListener('click', () => {
+            document.getElementById('avatar-modal').style.display = 'flex';
+        });
+
+        document.getElementById('avatar-modal-close-btn').addEventListener('click', hideModal);
+
+        document.getElementById('take-photo-btn').addEventListener('click', () => {
+            document.getElementById('upload-photo-input').click();
+        });
+
+        document.getElementById('choose-photo-btn').addEventListener('click', () => {
+            document.getElementById('upload-photo-input').click();
+        });
+
+        document.getElementById('upload-photo-input').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const avatarImg = document.createElement('img');
+                    avatarImg.src = e.target.result;
+                    const userAvatarDiv = document.getElementById('user-avatar');
+                    userAvatarDiv.innerHTML = '';
+                    userAvatarDiv.appendChild(avatarImg);
+                    localStorage.setItem(`avatar-${currentUser.firebaseUid}`, e.target.result);
+                    hideModal();
+                    showToast('Avatar atualizado com sucesso!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+
+        // --- Inicialização ---
+        window.onload = function() {
+            setTimeout(() => {
+                initFirebase();
+                togglePasswordVisibility('#password', '#toggle-password');
+                togglePasswordVisibility('#new-user-password', '#toggle-new-user-password');
+                togglePasswordVisibility('#current-password-modal', '#toggle-current-password-modal');
+                togglePasswordVisibility('#new-password-modal', '#toggle-new-password-modal');
+                togglePasswordVisibility('#confirm-new-password-modal', '#toggle-confirm-new-password-modal');
+                
+                const passwordInput = document.getElementById('password');
+                const capsLockWarning = document.getElementById('caps-lock-warning');
+                if (passwordInput && capsLockWarning) {
+                    passwordInput.addEventListener('keyup', (e) => {
+                        if (e.getModifierState('CapsLock')) {
+                            capsLockWarning.classList.remove('hidden');
+                        } else {
+                            capsLockWarning.classList.add('hidden');
+                        }
+                    });
+                }
+
+                // Adiciona listeners para status online/offline
+                window.addEventListener('online', checkOnlineStatus);
+                window.addEventListener('offline', checkOnlineStatus);
+                checkOnlineStatus(); // Verifica o status inicial
+
+                if ('standalone' in navigator && navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+                    // Já está em modo PWA, não faz nada
+                } else if (window.matchMedia('(max-width: 768px)').matches) {
+                    setTimeout(() => {
+                        // showModal('Adicionar à tela inicial?', 'Deseja adicionar um ícone deste aplicativo à sua tela inicial para acesso rápido?');
+                    }, 3000);
+                }
+            }, 100);
+        };
+    </script>
+</body>
+</html>
