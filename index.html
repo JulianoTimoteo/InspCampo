@@ -170,7 +170,7 @@
 <body class="font-inter">
     <!-- Tela de Login -->
     <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-4">
-        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md md:min-h-[500px] flex flex-col justify-center items-center">
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg w-full max-w-md md:min-h-[500px] flex flex-col justify-center items-center">
             <!-- Logo da Usina Pitangueiras -->
             <img id="login-logo" src="https://usinapitangueiras.com.br/wp-content/uploads/2020/04/usina-pitangueiras-logo.png" alt="Logo Usina Pitangueiras" class="w-2/3 max-w-[200px] h-auto mx-auto mb-6 animate-fade-slide-in">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
@@ -199,7 +199,7 @@
     </div>
 
     <!-- Interface Principal do Aplicativo -->
-    <div id="main-app" class="container mx-auto p-4 md:p-8 hidden">
+    <div id="main-app" class="container mx-auto p-6 md:p-8 hidden">
         <div class="flex flex-col md:flex-row justify-between items-center mb-8">
             <!-- Título e Logo ajustados para responsividade -->
             <div class="flex flex-col items-center md:items-start w-full md:w-auto mb-4 md:mb-0">
@@ -232,7 +232,7 @@
 
         <!-- Conteúdo das Abas -->
         <div id="aplicador-content" class="tab-content hidden">
-            <div class="main-card">
+            <div class="main-card p-4 sm:p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Checklists Disponíveis</h2>
                 <div id="tag-cloud-aplicador" class="flex flex-wrap gap-2 mb-6"></div>
                 <div id="aplicador-form-container" class="mt-8 hidden">
@@ -276,21 +276,21 @@
         </div>
 
         <div id="lider-content" class="tab-content hidden">
-            <div class="main-card">
+            <div class="main-card p-4 sm:p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Checklists Pendentes para Líder</h2>
                 <div id="lider-checklists-container"></div>
             </div>
         </div>
 
         <div id="pcma-content" class="tab-content hidden">
-            <div class="main-card">
+            <div class="main-card p-4 sm:p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Checklists Pendentes para PCMA</h2>
                 <div id="pcma-checklists-container"></div>
             </div>
         </div>
 
         <div id="realizados-content" class="tab-content hidden">
-            <div class="main-card">
+            <div class="main-card p-4 sm:p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Checklists Realizados</h2>
                 <div id="realizados-list-container"></div>
                 <div id="realizados-pagination" class="flex justify-center space-x-2 mt-4"></div>
@@ -298,7 +298,7 @@
         </div>
 
         <div id="novos-content" class="tab-content hidden">
-            <div class="main-card">
+            <div class="main-card p-4 sm:p-6 md:p-8">
                 <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">
                         <span id="novos-title">Novo Checklist</span>
@@ -320,7 +320,7 @@
                     </div>
                     <div id="sections-container"></div>
                     <div class="flex justify-end pt-4">
-                        <button type="button" id="add-section-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-full shadow transition-colors">
+                        <button type="button" id="add-section-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-full shadow-sm">
                             <i class="fas fa-plus-circle mr-2"></i>Adicionar Seção
                         </button>
                     </div>
@@ -329,20 +329,20 @@
         </div>
 
         <div id="cadastro-content" class="tab-content hidden">
-            <div class="main-card">
+            <div class="main-card p-4 sm:p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Gerenciamento de Usuários</h2>
                 <div class="mb-4">
                     <label for="user-search" class="block text-sm font-medium text-gray-700">Buscar Usuário</label>
                     <input type="text" id="user-search" placeholder="Buscar por nome ou usuário..." class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm">
                 </div>
-                <div class="mb-4 flex items-center space-x-4">
-                    <button id="import-xlsx-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                <div class="mb-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                    <button id="import-xlsx-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors w-full sm:w-auto">
                         <i class="fas fa-file-excel mr-2"></i>Importar XLSX
                     </button>
                     <input type="file" id="upload-xlsx-input" accept=".xlsx" class="hidden">
                     <i class="fas fa-question-circle text-gray-500 cursor-help" title="Formato esperado: nome, usuario, senha, nivelAcesso, id"></i>
 
-                    <button id="import-csv-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors">
+                    <button id="import-csv-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors w-full sm:w-auto">
                         <i class="fas fa-file-csv mr-2"></i>Importar CSV
                     </button>
                     <input type="file" id="upload-csv-input" accept=".csv" class="hidden">
@@ -497,7 +497,16 @@
 
         // Variáveis globais para Firebase e estado da aplicação
         let app, db, auth;
-        let currentUser; // Este objeto agora conterá o UID do Firebase Auth e o ID personalizado
+        // Definimos currentUser com uma estrutura que inclui appDocId e actualFirebaseAuthUid
+        let currentUser = {
+            appDocId: null, // O ID do documento do usuário no Firestore (UUID gerado pelo app)
+            actualFirebaseAuthUid: null, // O UID do Firebase Auth da sessão atual
+            nome: null,
+            usuario: null,
+            nivel: null,
+            id: null, // ID USINA
+            ativo: null,
+        };
         const environmentAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         
         // Configuração do Firebase: prioriza a configuração do ambiente, com fallback para a configuração fornecida.
@@ -677,34 +686,54 @@
                     console.log("[onAuthStateChanged] Triggered. Firebase Auth User UID:", user ? user.uid : "null", "Is Anonymous:", user ? user.isAnonymous : "N/A");
 
                     if (user) { // Se há um usuário autenticado pelo Firebase Auth (mesmo que anônimo)
-                        const userDocRef = doc(db, COLLECTIONS.USERS, user.uid);
-                        const userDocSnap = await retryWithExponentialBackoff(() => getDoc(userDocRef));
+                        // Se o token inicial é fornecido (ambiente Canvas), tente fazer login com ele primeiro
+                        if (initialAuthToken) {
+                            try {
+                                const userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                                console.log("[onAuthStateChanged] Login com token personalizado bem-sucedido:", userCredential.user.uid);
+                                // A partir daqui, o onAuthStateChanged será chamado novamente com o usuário autenticado.
+                                // Não faça nada mais aqui para evitar loops ou comportamento inesperado.
+                                return; 
+                            } catch (tokenError) {
+                                console.error("[onAuthStateChanged] Erro ao fazer login com token personalizado:", tokenError);
+                                // Se o token falhar, continue com o fluxo normal (anônimo ou login).
+                            }
+                        }
 
-                        if (userDocSnap.exists()) {
-                            // Documento do usuário existe com o UID do Firebase como ID
-                            currentUser = { firebaseUid: user.uid, ...userDocSnap.data() };
-                            console.log("[onAuthStateChanged] Usuário do Firebase Auth encontrado no Firestore. Dados carregados:", currentUser);
+                        // Tenta encontrar um perfil de usuário do aplicativo associado ao UID do Firebase Auth
+                        // Agora busca pelo campo 'actualFirebaseAuthUid' que aponta para o UID do Firebase Auth
+                        const q = query(collection(db, COLLECTIONS.USERS), where("actualFirebaseAuthUid", "==", user.uid));
+                        console.log(`[onAuthStateChanged] Buscando perfil do app vinculado ao Firebase Auth UID: ${user.uid}`);
+                        const querySnapshot = await retryWithExponentialBackoff(() => getDocs(q));
+
+                        if (!querySnapshot.empty) {
+                            // Encontrou um perfil de usuário do aplicativo. Prioriza o primeiro encontrado se houver múltiplos (não deveria)
+                            const userDoc = querySnapshot.docs[0];
+                            currentUser = { 
+                                appDocId: userDoc.id, // O ID do documento no Firestore (UUID gerado pelo app)
+                                actualFirebaseAuthUid: user.uid, // O UID do Firebase Auth da sessão atual
+                                ...userDoc.data() 
+                            };
+                            console.log("[onAuthStateChanged] Perfil de usuário do aplicativo encontrado e vinculado:", currentUser.appDocId);
                             handlePostLogin();
                         } else {
-                            // Se o usuário do Firebase Auth existe (provavelmente anônimo do ambiente Canvas)
-                            // mas não há um documento de perfil correspondente, direciona para o login.
-                            console.log("[onAuthStateChanged] Usuário do Firebase Auth existe (provavelmente anônimo) mas sem perfil correspondente no Firestore. Exibindo tela de login.");
+                            // Nenhum perfil de usuário do aplicativo vinculado a este UID do Firebase Auth.
+                            // Isso pode acontecer para novos usuários anônimos ou se o usuário ainda não logou com username/password.
+                            console.log("[onAuthStateChanged] Nenhum perfil de usuário do aplicativo vinculado a este Firebase Auth UID. Exibindo tela de login.");
                             showLoginScreen();
                         }
                     } else {
                         // Nenhum usuário do Firebase Auth (ex: após logout ou carga inicial sem pré-autenticação)
-                        // Tenta o login anônimo aqui para garantir que sempre haja um UID para a sessão trabalhar com o Firestore.
                         try {
-                            // Apenas faz login anônimo se não houver usuário algum.
-                            // Isso garante que onAuthStateChanged será acionado novamente com um usuário anônimo.
+                            // Tenta login anônimo para estabelecer uma sessão do Firebase Auth.
+                            // Isso garantirá que `onAuthStateChanged` seja acionado novamente com um `user` (anônimo).
                             await signInAnonymously(auth);
-                            console.log("[onAuthStateChanged] Nenhum usuário Firebase Auth. Login anônimo realizado para estabelecer uma sessão.");
+                            console.log("[onAuthStateChanged] Nenhum usuário Firebase Auth. Login anônimo realizado.");
                         } catch (anonError) {
                             console.warn("[onAuthStateChanged] Erro ao tentar login anônimo ao iniciar sem usuário:", anonError);
                             showModal('Erro de Autenticação', 'Não foi possível iniciar a sessão anônima. Tente novamente.');
                         }
-                        // Ainda mostra a tela de login por enquanto, já que o login anônimo é assíncrono
-                        showLoginScreen();
+                        showLoginScreen(); // Sempre mostra a tela de login se não houver um usuário logado
                     }
                 });
 
@@ -718,96 +747,77 @@
         // Lógica de login
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const usernameInput = document.getElementById('username').value;
-            const passwordInput = document.getElementById('password').value;
+            const usernameInput = document.getElementById('username').value.trim();
+            const passwordInput = document.getElementById('password').value.trim();
             const rememberMe = document.getElementById('remember-me').checked;
 
-            let firebaseAuthUser = auth.currentUser; // Deve estar disponível a partir do initFirebase's onAuthStateChanged
-            if (!firebaseAuthUser || !firebaseAuthUser.uid) {
-                console.warn("[Login Submit] firebaseAuthUser não disponível imediatamente. Tentando login anônimo de fallback.");
-                try {
-                    const anonUserCredential = await signInAnonymously(auth);
-                    firebaseAuthUser = anonUserCredential.user;
-                    console.log("[Login Submit] Fallback: Login anônimo realizado para obter Firebase Auth UID:", firebaseAuthUser.uid);
-                } catch (anonError) {
-                    console.error("[Login Submit] Erro no fallback de login anônimo:", anonError);
-                    showModal('Erro de Autenticação', 'Não foi possível iniciar a sessão do Firebase. Tente novamente.');
-                    return;
-                }
-            }
-            if (!firebaseAuthUser || !firebaseAuthUser.uid) { // Verificação final
-                 console.error("[Login Submit] Erro crítico: firebaseAuthUser é nulo ou não tem UID após todas as tentativas.");
-                 showModal('Erro Interno', 'Falha crítica na autenticação. Recarregue a página.');
-                 return;
-            }
-
-            console.log(`[Login Submit] Tentativa de login para usuário: ${usernameInput}. UID da sessão Firebase Auth: ${firebaseAuthUser.uid}`);
+            console.log(`[Login Submit] Tentativa de login para usuário: ${usernameInput}.`);
 
             try {
-                // 1. Encontra todos os documentos de usuário potenciais que correspondem ao nome de usuário fornecido.
-                const q = query(collection(db, COLLECTIONS.USERS), where("usuario", "==", usernameInput));
-                console.log(`[Login Submit] Consultando Firestore por usuários com username: ${usernameInput}`);
+                // 1. Encontra o perfil de usuário do aplicativo pelo username e senha
+                // A busca agora é estritamente por 'usuario' e 'senha' para encontrar o documento de perfil permanente.
+                const q = query(
+                    collection(db, COLLECTIONS.USERS), 
+                    where("usuario", "==", usernameInput),
+                    where("senha", "==", passwordInput)
+                );
+                console.log(`[Login Submit] Consultando Firestore por usuário: ${usernameInput}`);
                 const querySnapshot = await retryWithExponentialBackoff(() => getDocs(q));
                 
-                let validUserFoundData = null;
-                let documentsToProcess = []; // Coleta referências a documentos que correspondem ao nome de usuário/senha.
+                let foundUserDoc = null;
 
                 if (querySnapshot.empty) {
-                    console.warn(`[Login Submit] Nenhum documento encontrado para o username: ${usernameInput}.`);
+                    console.warn(`[Login Submit] Usuário ou senha incorretos para: ${usernameInput}.`);
                     showModal('Erro de Login', 'Usuário ou senha incorretos.');
                     return;
                 }
 
-                console.log(`[Login Submit] Encontrados ${querySnapshot.docs.length} documentos para o username: ${usernameInput}. Processando...`);
-                for (const docSnap of querySnapshot.docs) {
-                    const userData = docSnap.data();
-                    console.log(`[Login Submit] Analisando documento: ID=${docSnap.id}, Usuario=${userData.usuario}, Senha=${userData.senha}`);
-                    if (userData.senha === passwordInput) {
-                        validUserFoundData = userData; // Usa os dados desta correspondência válida
-                        documentsToProcess.push(docSnap.ref);
-                        console.log(`[Login Submit] Documento válido encontrado: ID=${docSnap.id}. Adicionado para processamento.`);
+                // Assume que `usuario` é único e pegamos o primeiro resultado válido
+                foundUserDoc = querySnapshot.docs[0];
+                const appUserId = foundUserDoc.id; // Este é o ID estável do documento do usuário no Firestore (UUID ou outro)
+                const userDataFromFirestore = foundUserDoc.data();
+
+                // 2. Garante que haja um Firebase Auth UID para a sessão atual (pode ser anônimo)
+                let firebaseAuthUser = auth.currentUser; 
+                if (!firebaseAuthUser || !firebaseAuthUser.uid) {
+                    console.warn("[Login Submit] Nenhuma sessão ativa do Firebase Auth. Tentando login anônimo de fallback.");
+                    try {
+                        const anonUserCredential = await signInAnonymously(auth);
+                        firebaseAuthUser = anonUserCredential.user;
+                        console.log("[Login Submit] Fallback: Login anônimo realizado para obter Firebase Auth UID:", firebaseAuthUser.uid);
+                    } catch (anonError) {
+                        console.error("[Login Submit] Erro no fallback de login anônimo:", anonError);
+                        showModal('Erro de Autenticação', 'Não foi possível iniciar a sessão do Firebase. Tente novamente.');
+                        return;
                     }
                 }
-
-                if (!validUserFoundData) {
-                    console.warn(`[Login Submit] Nenhuma correspondência de senha encontrada para o username: ${usernameInput}.`);
-                    showModal('Erro de Login', 'Usuário ou senha incorretos.');
-                    return;
+                if (!firebaseAuthUser || !firebaseAuthUser.uid) { 
+                     console.error("[Login Submit] Erro crítico: firebaseAuthUser é nulo ou não tem UID após todas as tentativas.");
+                     showModal('Erro Interno', 'Falha crítica na autenticação. Recarregue a página.');
+                     return;
                 }
 
-                // 2. Define a referência do documento canônico usando o UID do Firebase Auth atual.
-                const canonicalUserDocRef = doc(db, COLLECTIONS.USERS, firebaseAuthUser.uid);
+                // 3. Vincula o UID da sessão Firebase Auth ao perfil de usuário do aplicativo
+                const currentFirebaseAuthUid = firebaseAuthUser.uid;
+                const userDocRef = doc(db, COLLECTIONS.USERS, appUserId); // Referencia o documento permanente
+
+                // Log dos UIDs para depuração antes da atualização
+                console.log(`[Login Submit] UID da sessão Firebase Auth: ${currentFirebaseAuthUid}`);
+                console.log(`[Login Submit] ID do documento do usuário (appDocId): ${appUserId}`);
+                console.log(`[Login Submit] Atualizando 'actualFirebaseAuthUid' do documento ${appUserId} para ${currentFirebaseAuthUid}.`);
+
+                // Atualiza o perfil de usuário com o UID da sessão atual do Firebase Auth
+                // Esta operação requer que as regras de segurança permitam que o user.uid atualize o campo actualFirebaseAuthUid.
+                await retryWithExponentialBackoff(() => updateDoc(userDocRef, { actualFirebaseAuthUid: currentFirebaseAuthUid }));
                 
-                // Consolida os dados. Este será o perfil de usuário definitivo.
-                const consolidatedUserData = {
-                    ...validUserFoundData,
-                    firebaseAuthUid: firebaseAuthUser.uid, // Crucialmente, sobrescreve isso com o *UID da sessão atual*
-                    criadoEm: validUserFoundData.criadoEm || serverTimestamp() // Preserva o tempo de criação original ou define um novo
+                console.log(`[Login Submit] Perfil de usuário ${appUserId} vinculado ao Firebase Auth UID: ${currentFirebaseAuthUid} com sucesso.`);
+
+                // 4. Atualiza o objeto currentUser global
+                currentUser = {
+                    appDocId: appUserId, // O ID estável do documento do Firestore
+                    actualFirebaseAuthUid: currentFirebaseAuthUid, // O UID da sessão Firebase Auth atual
+                    ...userDataFromFirestore // Copia todos os outros dados do usuário
                 };
-
-                console.log(`[Login Submit] Tentando criar/atualizar documento canônico para UID Auth: ${firebaseAuthUser.uid}. Dados:`, consolidatedUserData);
-                await retryWithExponentialBackoff(() => setDoc(canonicalUserDocRef, consolidatedUserData, { merge: false }));
-                console.log(`[Login Submit] Documento canônico para ${usernameInput} (UID Auth: ${firebaseAuthUser.uid}) criado/atualizado com sucesso.`);
-
-                // 3. Exclui quaisquer documentos duplicados restantes que NÃO são o canônico.
-                console.log(`[Login Submit] Iniciando limpeza de ${documentsToProcess.length} documentos potenciais para o username: ${usernameInput}.`);
-                for (const docRefToDelete of documentsToProcess) {
-                    if (docRefToDelete.id !== firebaseAuthUser.uid) { // Apenas exclui se NÃO for o canônico
-                        try {
-                            console.log(`[Login Submit] Tentando excluir duplicata: ID=${docRefToDelete.id}`);
-                            await retryWithExponentialBackoff(() => deleteDoc(docRefToDelete));
-                            console.log(`[Login Submit] Duplicata para '${usernameInput}' com UID ${docRefToDelete.id} removida com sucesso.`);
-                        } catch (deleteError) {
-                            console.warn(`[Login Submit] Não foi possível remover duplicata para '${usernameInput}' com UID ${docRefToDelete.id}:`, deleteError);
-                            showModal('Aviso de Limpeza', `Não foi possível remover uma duplicata antiga do usuário. Verifique as permissões de segurança ou o console para mais detalhes.`);
-                        }
-                    } else {
-                        console.log(`[Login Submit] Documento ${docRefToDelete.id} é o canônico, não será excluído.`);
-                    }
-                }
-
-                // Atualiza o objeto currentUser global com os dados consolidados
-                currentUser = { firebaseUid: firebaseAuthUser.uid, ...consolidatedUserData };
                 console.log("[Login Submit] Login bem-sucedido. Usuário do aplicativo atualizado:", currentUser);
 
                 if (rememberMe) {
@@ -820,7 +830,12 @@
                 
             } catch (error) {
                 console.error("[Login Submit] Erro durante o login:", error);
-                showModal('Erro de Login', 'Ocorreu um erro. Tente novamente.');
+                // Exibe uma mensagem mais específica se for um erro de permissão
+                if (error.code === 'permission-denied') {
+                    showModal('Erro de Permissão', 'Não foi possível vincular sua sessão. Verifique as regras de segurança do Firebase ou entre em contato com o suporte.');
+                } else {
+                    showModal('Erro de Login', 'Ocorreu um erro inesperado. Tente novamente.');
+                }
             }
         });
 
@@ -846,11 +861,10 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             showToast(`Bem-vindo(a), ${currentUser.nome}!`, 'success');
-            // Exibe o UID do Firebase Auth real, que é o ID do documento do usuário
-            // ALTERAÇÃO AQUI: Mostra ID USINA em vez de UID do Firebase
-            document.getElementById('user-info').textContent = `${currentUser.nome} (${currentUser.usuario}) - ID USINA: ${currentUser.id}`;
+            // Exibe o ID USINA e o ID do documento do Firestore
+            document.getElementById('user-info').textContent = `${currentUser.nome} (ID USINA: ${currentUser.id}) - Doc ID: ${currentUser.appDocId}`;
             setupTabs(currentUser.nivel);
-            const savedAvatar = localStorage.getItem(`avatar-${currentUser.firebaseUid}`); 
+            const savedAvatar = localStorage.getItem(`avatar-${currentUser.appDocId}`); // Usa appDocId para avatar
             if (savedAvatar) {
                 const avatarImg = document.createElement('img');
                 avatarImg.src = savedAvatar;
@@ -876,7 +890,7 @@
 
             const allTabs = {
                 'master': ['aplicador', 'lider', 'pcma', 'realizados', 'novos', 'cadastro'],
-                'pcma': ['pcma', 'realizados', 'novos'],
+                'pcma': ['pcma', 'realizados', 'novos'], 
                 'lider': ['lider', 'realizados'],
                 'aplicador': ['aplicador', 'realizados']
             };
@@ -892,12 +906,12 @@
             if (unsubscribeChecklists) { unsubscribeChecklists(); unsubscribeChecklists = null; }
             if (unsubscribePendingLider) { unsubscribePendingLider(); unsubscribePendingLider = null; }
             if (unsubscribePendingPcma) { unsubscribePendingPcma(); unsubscribePendingPcma = null; }
-            if (unsubscribeAppliedChecklists) { unsubscribeAppliedChecklists(); unsubscribeAppliedChecklists = null; }
+            if (unsubscribeAppliedChecklists) { unsubscribeAppliedChecklists = null; }
             if (unsubscribeUsers) { unsubscribeUsers(); unsubscribeUsers = null; }
             console.log("[setupTabs] Listeners antigos desinscritos.");
 
-            // Só inicia os listeners de dados se o usuário estiver autenticado
-            if (currentUser) {
+            // Só inicia os listeners de dados se o usuário estiver autenticado (ou seja, currentUser.appDocId está preenchido)
+            if (currentUser && currentUser.appDocId) {
                 console.log("[setupTabs] Usuário autenticado. Inscrevendo novos listeners...");
                 unsubscribeChecklists = listenForChecklists();
                 if (nivel === 'lider' || nivel === 'pcma' || nivel === 'master') {
@@ -915,14 +929,14 @@
             } else {
                 // Se não há currentUser (ex: após logout), garante que os contêineres sejam limpos e os listeners desativados
                 console.log("[setupTabs] Nenhum usuário autenticado. Limpando contêineres de dados.");
-                document.getElementById('tag-cloud-aplicador').innerHTML = '';
+                document.getElementById('tag-cloud-aplicador').innerHTML = '<p class="text-center text-gray-500">Faça login para ver os checklists disponíveis.</p>';
                 document.getElementById('aplicador-form-container').classList.add('hidden');
-                document.getElementById('lider-checklists-container').innerHTML = '';
-                document.getElementById('pcma-checklists-container').innerHTML = '';
-                document.getElementById('realizados-list-container').innerHTML = '';
+                document.getElementById('lider-checklists-container').innerHTML = '<p class="text-center text-gray-500">Faça login para ver os checklists pendentes.</p>';
+                document.getElementById('pcma-checklists-container').innerHTML = '<p class="text-center text-gray-500">Faça login para ver os checklists pendentes.</p>';
+                document.getElementById('realizados-list-container').innerHTML = '<p class="text-center text-gray-500">Faça login para ver os checklists realizados.</p>';
                 document.getElementById('tag-cloud-novos').innerHTML = '';
                 document.getElementById('sections-container').innerHTML = '';
-                document.getElementById('user-list').innerHTML = '';
+                document.getElementById('user-list').innerHTML = '<p class="text-center text-gray-500">Faça login para ver a lista de usuários.</p>';
                 document.getElementById('realizados-pagination').innerHTML = '';
                 document.getElementById('user-pagination').innerHTML = '';
             }
@@ -930,8 +944,26 @@
 
         document.getElementById('logout-btn').addEventListener('click', async () => {
             console.log("[Logout] Botão de logout clicado. Realizando signOut...");
+            // Desinscreve todos os listeners antes de fazer signOut para evitar erros de permissão
+            if (unsubscribeChecklists) { unsubscribeChecklists(); unsubscribeChecklists = null; }
+            if (unsubscribePendingLider) { unsubscribePendingLider(); unsubscribePendingLider = null; }
+            if (unsubscribePendingPcma) { unsubscribePendingPcma(); unsubscribePendingPcma = null; }
+            if (unsubscribeAppliedChecklists) { unsubscribeAppliedChecklists(); unsubscribeAppliedChecklists = null; }
+            if (unsubscribeUsers) { unsubscribeUsers(); unsubscribeUsers = null; }
+            console.log("[Logout] Todos os listeners foram desinscritos.");
+
             await auth.signOut();
-            console.log("[Logout] signOut concluído. onAuthStateChanged deve agora atualizar a UI.");
+            // Limpa o estado do usuário atual após o logout
+            currentUser = {
+                appDocId: null,
+                actualFirebaseAuthUid: null,
+                nome: null,
+                usuario: null,
+                nivel: null,
+                id: null,
+                ativo: null,
+            };
+            console.log("[Logout] signOut concluído. onAuthStateChanged deve agora atualizar a UI e iniciar um login anônimo.");
             // onAuthStateChanged irá lidar com a definição de currentUser para nulo e chamar showLoginScreen()
             // e setupTabs então desinscreverá corretamente todos os listeners.
         });
@@ -940,10 +972,9 @@
 
         const listenForChecklists = () => {
             // Verifica se o usuário está autenticado antes de tentar ler
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 console.warn("[listenForChecklists] Usuário não autenticado, não carregando checklists dinâmicos.");
-                document.getElementById('tag-cloud-aplicador').innerHTML = '<p class="text-center text-gray-500">Faça login para ver os checklists disponíveis.</p>';
-                return;
+                return null; // Retorna null se não houver listener para desinscrever
             }
             // Acessa a coleção 'dynamic_checklists' diretamente
             const q = query(collection(db, COLLECTIONS.DYNAMIC_CHECKLISTS));
@@ -955,7 +986,12 @@
                 renderTagCloud('novos', checklists);
             }, (error) => {
                 console.error("[listenForChecklists] Erro ao carregar checklists:", error);
-                showModal('Erro', 'Não foi possível carregar os checklists. Tente novamente.');
+                // CORREÇÃO: Só mostra o modal se o erro não for de permissão OU se o usuário ainda estiver autenticado (pelo appDocId)
+                if (error.code !== 'permission-denied' || (currentUser && currentUser.appDocId)) {
+                    showModal('Erro', 'Não foi possível carregar os checklists. Tente novamente.');
+                } else {
+                    console.log("[listenForChecklists] Erro de permissão em um listener após logout. Ignorando modal.");
+                }
             });
         };
 
@@ -1000,7 +1036,8 @@
             document.getElementById('mecanico-name').value = '';
 
             document.getElementById('frota').addEventListener('input', (e) => {
-                if (e.target.value.length > 0 && document.getElementById('start-time').value === '') {
+                // Certifica que a hora inicial só é preenchida uma vez
+                if (e.target.value.trim().length > 0 && document.getElementById('start-time').value.trim() === '') {
                     const now = new Date();
                     document.getElementById('start-time').value = now.toLocaleString('pt-BR');
                 }
@@ -1017,7 +1054,7 @@
                     const itemDiv = document.createElement('div');
                     itemDiv.classList.add('mb-2', 'checklist-item-container');
                     
-                    const itemTextContent = String(item.itemText || '');
+                    const itemTextContent = String(item.itemText || '').trim(); // Trim aqui
                     const emptyTextClass = itemTextContent.trim() === '' ? 'text-red-500 font-bold' : '';
 
                     let itemHtml = `
@@ -1028,6 +1065,12 @@
                     
                     console.log(`[RENDER] Checklist "${checklist.title}", Seção "${section.sectionTitle}", Item ${itemIndex}: "${itemTextContent}"`);
 
+                    if (itemTextContent === '') { // Usa conteúdo trimado para validação
+                        console.error(`Erro: Texto do item não encontrado para o item ${itemIndex} na seção ${section.sectionTitle}.`, itemDiv);
+                        // showModal('Aviso', `O texto para o item ${itemIndex + 1} na seção "${sectionTitle}" é obrigatório.`);
+                        // Return not necessary here as it's just rendering, validation happens on submit
+                    }
+                    
                     if (item.itemType === 'radio') {
                         itemHtml += `
                             <div class="flex items-center space-x-4 mt-1">
@@ -1103,12 +1146,16 @@
                     title: checklistTitle,
                     sections: []
                 },
-                frota: form.frota.value,
-                os: form.os.value,
-                aplicador: { nome: currentUser.nome, id: currentUser.id, firebaseUid: currentUser.firebaseUid }, // Inclui firebaseUid
-                mecanico: form['mecanico-name'].value,
+                frota: form.frota.value.trim(),
+                os: form.os.value.trim(),
+                aplicador: { 
+                    nome: currentUser.nome, 
+                    id: currentUser.id, 
+                    appDocId: currentUser.appDocId, // Adicionado para validação de regras do Firestore
+                }, 
+                mecanico: form['mecanico-name'].value.trim(),
                 data: now.toLocaleDateString('pt-BR'),
-                horaInicial: form['start-time'].value,
+                horaInicial: form['start-time'].value.trim(),
                 horaFinal: now.toLocaleString('pt-BR'),
                 status: {
                     lider: 'pendente',
@@ -1122,7 +1169,7 @@
             for (let sectionIndex = 0; sectionIndex < formSections.length; sectionIndex++) {
                 const sectionDiv = formSections[sectionIndex];
                 const sectionTitleElement = sectionDiv.querySelector('h4');
-                const sectionTitle = sectionTitleElement ? sectionTitleElement.textContent : `Seção ${sectionIndex + 1}`;
+                const sectionTitle = sectionTitleElement ? sectionTitleElement.textContent.trim() : `Seção ${sectionIndex + 1}`; // Trim aqui
                 
                 const sectionResponses = [];
                 const items = sectionDiv.querySelectorAll('.checklist-item-container');
@@ -1130,7 +1177,7 @@
                 for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
                     const itemDiv = items[itemIndex];
                     const itemTextElement = itemDiv.querySelector('.item-text-display');
-                    const itemText = itemTextElement ? String(itemTextElement.textContent || '').trim() : '';
+                    const itemText = itemTextElement ? String(itemTextElement.textContent || '').trim() : ''; // Trim aqui
                     
                     console.log(`[VALIDATION - RADICAL] Checklist "${checklistTitle}", Seção "${sectionTitle}", Item ${itemIndex}: "${itemText}" (Length: ${itemText.length}, Trimmed Length: ${itemText.trim().length})`);
 
@@ -1156,7 +1203,7 @@
                         }
                         response.status = radio.value;
                         const observacaoTextarea = itemDiv.querySelector(`textarea[name="obs-section-${sectionIndex}-item-${itemIndex}"]`);
-                        response.observacao = observacaoTextarea ? observacaoTextarea.value : '';
+                        response.observacao = observacaoTextarea ? observacaoTextarea.value.trim() : ''; // Trim aqui
                         if (response.status === 'nao-ok' && response.observacao.trim() === '') {
                              showModal('Aviso', `O campo de observação é obrigatório para o item "${itemText}" (NÃO OK).`);
                              return;
@@ -1166,13 +1213,13 @@
                             showModal('Aviso', `O campo de texto para o item "${itemText}" é obrigatório.`);
                             return;
                         }
-                        response.value = textField.value;
+                        response.value = textField.value.trim(); // Trim aqui
                     } else if (dropdownField) {
                         if (dropdownField.value.trim() === '') {
                             showModal('Aviso', `Por favor, selecione uma opção para o item "${itemText}".`);
                             return;
                         }
-                        response.value = dropdownField.value;
+                        response.value = dropdownField.value.trim(); // Trim aqui
                     }
                     sectionResponses.push(response);
                 }
@@ -1182,6 +1229,7 @@
 
             try {
                 // Acessa a coleção 'applied_checklists' diretamente
+                // O ID do documento é a frota, como no seu modelo
                 const docRef = doc(db, COLLECTIONS.APPLIED_CHECKLISTS, responseData.frota);
                 await retryWithExponentialBackoff(() => setDoc(docRef, responseData, { merge: false }));
                 showToast('Respostas salvas com sucesso!', 'success');
@@ -1339,17 +1387,17 @@
 
         const getFormDataNovos = () => {
             const form = document.getElementById('novos-checklist-form');
-            const title = form.querySelector('#checklist-title').value;
+            const title = form.querySelector('#checklist-title').value.trim(); // Trim aqui
             const sections = [];
             form.querySelectorAll('.section-card').forEach(sectionDiv => {
-                const sectionTitle = sectionDiv.querySelector('input[name="section-title"]').value;
+                const sectionTitle = sectionDiv.querySelector('input[name="section-title"]').value.trim(); // Trim aqui
                 const items = [];
                 sectionDiv.querySelectorAll('.items-container > div').forEach(itemDiv => {
-                    const itemText = itemDiv.querySelector('input[name="item-text"]').value;
+                    const itemText = itemDiv.querySelector('input[name="item-text"]').value.trim(); // Trim aqui
                     const itemType = itemDiv.querySelector('select[name="item-type"]').value;
                     let itemOptions = '';
                     if (itemType === 'dropdown') {
-                        itemOptions = itemDiv.querySelector('textarea[name="item-options"]').value;
+                        itemOptions = itemDiv.querySelector('textarea[name="item-options"]').value.trim(); // Trim aqui
                     }
                     items.push({ itemText, itemType, itemOptions });
                 });
@@ -1372,14 +1420,15 @@
         });
 
         document.getElementById('save-new-checklist-btn').addEventListener('click', async () => {
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 showModal('Erro de Permissão', 'Você precisa estar logado para criar/editar checklists.');
                 console.warn('Operação negada: Usuário não autenticado para salvar checklist.');
                 return;
             }
+            console.log(`[save-new-checklist-btn] Usuário atual nível: ${currentUser.nivel}`); // Log para depuração
             if (!['lider', 'pcma', 'master'].includes(currentUser.nivel)) {
                 showModal('Erro de Permissão', 'Seu nível de acesso não permite criar/editar checklists.');
-                console.warn(`Operação negada: Usuário ${currentUser.firebaseUid} (${currentUser.nivel}) tentou salvar checklist sem permissão.`);
+                console.warn(`Operação negada: Usuário ${currentUser.appDocId} (${currentUser.nivel}) tentou salvar checklist sem permissão.`);
                 return;
             }
 
@@ -1451,14 +1500,15 @@
         });
 
         document.getElementById('delete-selected-checklist-btn').addEventListener('click', () => {
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 showModal('Erro de Permissão', 'Você precisa estar logado para excluir checklists.');
                 console.warn('Operação negada: Usuário não autenticado para excluir checklist.');
                 return;
             }
+            console.log(`[delete-selected-checklist-btn] Usuário atual nível: ${currentUser.nivel}`); // Log para depuração
             if (!['lider', 'pcma', 'master'].includes(currentUser.nivel)) {
                 showModal('Erro de Permissão', 'Seu nível de acesso não permite excluir checklists.');
-                console.warn(`Operação negada: Usuário ${currentUser.firebaseUid} (${currentUser.nivel}) tentou excluir checklist sem permissão.`);
+                console.warn(`Operação negada: Usuário ${currentUser.appDocId} (${currentUser.nivel}) tentou excluir checklist sem permissão.`);
                 return;
             }
 
@@ -1494,10 +1544,9 @@
 
         const listenForPendingChecklists = (role) => {
             // Verifica se o usuário está autenticado antes de tentar ler
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 console.warn(`[listenForPendingChecklists] Usuário não autenticado, não carregando checklists pendentes para ${role}.`);
-                document.getElementById(`${role}-checklists-container`).innerHTML = '<p class="text-center text-gray-500">Faça login para ver os checklists pendentes.</p>';
-                return;
+                return null; // Retorna null
             }
             // Acessa a coleção 'applied_checklists' diretamente
             const q = query(
@@ -1549,14 +1598,14 @@
         };
         
         const updateChecklistStatus = async (checklistId, role, status) => {
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 showModal('Erro de Permissão', 'Você precisa estar logado para atualizar o status do checklist.');
                 console.warn('Operação negada: Usuário não autenticado para atualizar status.');
                 return;
             }
             if (!['lider', 'pcma', 'master'].includes(currentUser.nivel)) {
                 showModal('Erro de Permissão', 'Seu nível de acesso não permite atualizar o status deste checklist.');
-                console.warn(`Operação negada: Usuário ${currentUser.firebaseUid} (${currentUser.nivel}) tentou atualizar status sem permissão.`);
+                console.warn(`Operação negada: Usuário ${currentUser.appDocId} (${currentUser.nivel}) tentou atualizar status sem permissão.`);
                 return;
             }
 
@@ -1655,10 +1704,9 @@
         
         const listenForAppliedChecklists = () => {
             // Verifica se o usuário está autenticado antes de tentar ler
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 console.warn("[listenForAppliedChecklists] Usuário não autenticado, não carregando checklists aplicados.");
-                document.getElementById('realizados-list-container').innerHTML = '<p class="text-center text-gray-500">Faça login para ver os checklists realizados.</p>';
-                return;
+                return null; // Retorna null
             }
             // Acessa a coleção 'applied_checklists' diretamente
             const q = query(collection(db, COLLECTIONS.APPLIED_CHECKLISTS));
@@ -1706,10 +1754,8 @@
                 section.items.forEach(item => {
                     let statusHtml = '';
                     let observacao = item.observacao || '';
-                    if (item.status === 'ok') {
-                        statusHtml = `<span class="text-green-600 font-bold">OK</span>`;
-                    } else if (item.status === 'nao-ok') {
-                        statusHtml = `<span class="text-red-600 font-bold">NÃO OK</span>`;
+                    if (item.status) {
+                        statusHtml = `<span class="text-green-600 font-bold">${item.status.toUpperCase()}</span>`;
                     } else if (typeof item.value === 'boolean') {
                          statusHtml = `<span class="text-blue-600 font-bold">${item.value ? 'Marcado' : 'Não Marcado'}</span>`;
                     } else if (item.value) {
@@ -1734,28 +1780,53 @@
 
         // --- ABA CADASTRO ---
 
-        let allUsers = [];
-        let currentPageUsers = 1;
+        let allUsers = []; // This will now hold the deduplicated list
+        let currentPageUsers = 1; // Keep track of current page for pagination
 
         const listenForUsers = () => {
             // Verifica se o usuário está autenticado antes de tentar ler
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 console.warn("[listenForUsers] Usuário não autenticado, não carregando lista de usuários.");
-                document.getElementById('user-list').innerHTML = '<p class="text-center text-gray-500">Faça login para ver a lista de usuários.</p>';
-                document.getElementById('add-user-form').classList.add('hidden');
-                document.getElementById('access-level-container').classList.add('hidden');
-                document.getElementById('user-search').classList.add('hidden');
-                document.getElementById('import-xlsx-btn').classList.add('hidden');
-                document.getElementById('import-csv-btn').classList.add('hidden');
-                return;
+                return null; // Retorna null
             }
             // Acessa a coleção 'users' diretamente
             const q = query(collection(db, COLLECTIONS.USERS));
             // Retorna a função de unsubscribe
             return onSnapshot(q, (snapshot) => {
-                // O ID do documento agora é o firebaseUid
-                allUsers = snapshot.docs.map(doc => ({ firebaseUid: doc.id, ...doc.data() }));
-                console.log("[listenForUsers] Lista de usuários atualizada:", allUsers.length, "usuários.");
+                const uniqueUsersMap = new Map(); // Key: usuario (nome de login), Value: o melhor documento de usuário
+
+                snapshot.docs.forEach(docSnap => {
+                    const userData = { appDocId: docSnap.id, ...docSnap.data() }; 
+                    const username = userData.usuario;
+
+                    const existingUser = uniqueUsersMap.get(username);
+
+                    if (!existingUser) {
+                        uniqueUsersMap.set(username, userData);
+                    } else {
+                        // Prioriza o documento que tem um `actualFirebaseAuthUid` definido
+                        // e, se possível, aquele cujo `appDocId` (ID do documento) coincide com `actualFirebaseAuthUid`
+                        const currentHasFirebaseAuthUid = !!userData.actualFirebaseAuthUid;
+                        const existingHasFirebaseAuthUid = !!existingUser.actualFirebaseAuthUid;
+                        const isCurrentCanonical = userData.appDocId === userData.actualFirebaseAuthUid;
+                        const isExistingCanonical = existingUser.appDocId === existingUser.actualFirebaseAuthUid;
+
+                        if (isCurrentCanonical) {
+                            uniqueUsersMap.set(username, userData); // Se o atual é canônico, ele é o melhor
+                        } else if (isExistingCanonical) {
+                            // Mantém o existente (não faz nada), pois ele já é o canônico
+                        } else if (currentHasFirebaseAuthUid && !existingHasFirebaseAuthUid) {
+                            uniqueUsersMap.set(username, userData); // Se o atual tem UID de auth e o existente não, o atual é melhor
+                        }
+                        // Se nenhuma das condições acima for atendida, mantém o existingUser.
+                        // Isso lida com casos onde ambos não são canônicos ou ambos têm UID de auth mas nenhum é 'canonical'
+                        // (i.e. seu ID de documento não é o UID de auth, o que implica que é um duplicado ou um registro antigo).
+                    }
+                });
+
+                // Converte os valores do mapa em um array, filtrando quaisquer documentos obsoletos explicitamente marcados.
+                allUsers = Array.from(uniqueUsersMap.values()).filter(user => !user.isObsolete);
+                console.log("[listenForUsers] Lista de usuários atualizada:", allUsers.length, "usuários (deduplicados e filtrados).");
                 renderUserList(currentPageUsers);
             }, (error) => {
                 console.error("[listenForUsers] Erro ao carregar usuários:", error);
@@ -1770,12 +1841,6 @@
 
             const isMaster = currentUser && currentUser.nivel === 'master';
             if (!isMaster) {
-                userListContainer.innerHTML = '<p class="text-center text-gray-500">Você não tem permissão para visualizar usuários.</p>';
-                document.getElementById('add-user-form').classList.add('hidden');
-                document.getElementById('access-level-container').classList.add('hidden');
-                document.getElementById('user-search').classList.add('hidden');
-                document.getElementById('import-xlsx-btn').classList.add('hidden');
-                document.getElementById('import-csv-btn').classList.add('hidden');
                 return;
             } else {
                 document.getElementById('add-user-form').classList.remove('hidden');
@@ -1786,9 +1851,12 @@
             }
 
             const filteredUsers = allUsers.filter(user => 
-                user.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                // Filtra pela barra de busca
+                (user.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 user.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                user.id.toLowerCase().includes(searchTerm.toLowerCase())
+                user.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (user.actualFirebaseAuthUid && user.actualFirebaseAuthUid.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (user.appDocId && user.appDocId.toLowerCase().includes(searchTerm.toLowerCase()))) // Adicionado busca por appDocId
             );
 
             const start = (page - 1) * PAGINATION_LIMIT;
@@ -1807,7 +1875,8 @@
                     <div class="mb-2 sm:mb-0">
                         <p class="font-semibold text-lg">${user.nome} (<span class="text-blue-700">${user.usuario}</span>)</p>
                         <p class="text-sm text-gray-600">ID USINA: <span class="font-medium">${user.id}</span></p>
-                        <p class="text-sm text-gray-600 break-words">UID Firebase: <span class="font-medium">${user.firebaseUid}</span></p>
+                        <p class="text-sm text-gray-600 break-words">Doc ID (App): <span class="font-medium">${user.appDocId}</span></p>
+                        <p class="text-sm text-gray-600 break-words">Firebase UID: <span class="font-medium">${user.actualFirebaseAuthUid || 'N/A'}</span></p>
                         <p class="text-sm text-gray-600">Nível: <span class="font-medium">${user.nivel}</span></p>
                         <p class="text-sm text-gray-600">Ativo: <span class="font-medium">${user.ativo ? 'Sim' : 'Não'}</span></p>
                         <p class="text-sm text-gray-600">Criado em: <span class="font-medium">${user.criadoEm ? new Date(user.criadoEm.toDate()).toLocaleString('pt-BR') : 'N/A'}</span></p>
@@ -1823,31 +1892,31 @@
                 deleteBtn.title = `Excluir usuário ${user.nome}`;
                 
                 // Esconde o botão de exclusão se for o próprio usuário logado ou se for um master tentando excluir outro master
-                if (currentUser.firebaseUid === user.firebaseUid || (currentUser.nivel === 'master' && user.nivel === 'master' && currentUser.firebaseUid !== user.firebaseUid)) {
+                if (currentUser.appDocId === user.appDocId || (currentUser.nivel === 'master' && user.nivel === 'master' && currentUser.appDocId !== user.appDocId)) {
                     deleteBtn.classList.add('hidden');
                 }
 
                 deleteBtn.addEventListener('click', async () => {
-                    console.log(`[DEBUG] Tentando excluir usuário. Usuário logado UID: ${currentUser.firebaseUid}, Nível: ${currentUser.nivel}. Usuário alvo UID: ${user.firebaseUid}, Nível: ${user.nivel}.`);
+                    console.log(`[DEBUG] Tentando excluir usuário. Usuário logado Doc ID: ${currentUser.appDocId}, Nível: ${currentUser.nivel}. Usuário alvo Doc ID: ${user.appDocId}, Nível: ${user.nivel}.`);
 
                     // 1. Verificação local de permissão
                     let canDelete = false;
                     let reason = '';
 
-                    if (!currentUser) {
+                    if (!currentUser || !currentUser.appDocId) {
                         reason = 'Você precisa estar logado para excluir usuários.';
-                    } else if (currentUser.firebaseUid === user.firebaseUid) { // Auto-exclusão
+                    } else if (currentUser.appDocId === user.appDocId) { // Auto-exclusão
                         canDelete = true;
                         reason = 'Auto-exclusão permitida.';
                     } else if (currentUser.nivel === 'master') { // Master tentando excluir outro
                         // 2. Confirmação no Firestore (para obter o nível do usuário alvo)
                         try {
                             // Acessa a coleção 'users' diretamente
-                            const targetUserDocRef = doc(db, COLLECTIONS.USERS, user.firebaseUid);
+                            const targetUserDocRef = doc(db, COLLECTIONS.USERS, user.appDocId);
                             const targetUserDocSnap = await retryWithExponentialBackoff(() => getDoc(targetUserDocRef));
                             if (targetUserDocSnap.exists()) {
                                 const targetUserData = targetUserDocSnap.data();
-                                if (targetUserData.nivel === 'master') {
+                                if (targetUserData.nivel === 'master' && user.nivel !== 'master') { 
                                     reason = 'Um usuário master não pode excluir outro usuário master.';
                                 } else {
                                     canDelete = true;
@@ -1857,7 +1926,7 @@
                                 reason = 'Usuário alvo não encontrado no Firestore.';
                             }
                         } catch (fetchError) {
-                            console.error("Erro ao buscar dados do usuário alvo para verificação de exclusão:", fetchError);
+                            console.error("[ADD/EDIT USER] Erro ao buscar dados do usuário alvo para verificação de exclusão:", fetchError);
                             showModal('Erro', 'Não foi possível verificar as permissões. Tente novamente.');
                             return;
                         }
@@ -1875,16 +1944,16 @@
                     showConfirmModal('Excluir Usuário', `Tem certeza que deseja excluir o usuário "${user.nome}"?`, async () => {
                         try {
                             // Acessa a coleção 'users' diretamente
-                            const docRef = doc(db, COLLECTIONS.USERS, user.firebaseUid); 
-                            console.log(`[DELETE USER] Excluindo documento de usuário com ID: ${user.firebaseUid}`);
+                            const docRef = doc(db, COLLECTIONS.USERS, user.appDocId); 
+                            console.log(`[DELETE USER] Excluindo documento de usuário com ID: ${user.appDocId}`);
                             await retryWithExponentialBackoff(() => deleteDoc(docRef));
                             showToast('Usuário excluído com sucesso!');
-                            console.log(`[DELETE USER] Usuário ${user.firebaseUid} excluído com sucesso por ${currentUser.firebaseUid}.`);
+                            console.log(`[DELETE USER] Usuário ${user.appDocId} excluído com sucesso por ${currentUser.appDocId}.`);
                         } catch (error) {
                             console.error("[DELETE USER] Erro ao excluir usuário:", error);
                             if (error.code === 'permission-denied') {
                                 showModal('Erro de Permissão', 'Você não tem permissão para excluir este usuário. Verifique as regras de segurança.');
-                                console.error(`[DELETE USER] Falha de permissão ao excluir usuário ${user.firebaseUid}. Usuário logado UID: ${currentUser.firebaseUid}, Nível: ${currentUser.nivel}.`);
+                                console.error(`[DELETE USER] Falha de permissão ao excluir usuário ${user.appDocId}. Usuário logado Doc ID: ${currentUser.appDocId}, Nível: ${currentUser.nivel}.`);
                             } else {
                                 showModal('Erro', 'Não foi possível excluir o usuário. Tente novamente.');
                             }
@@ -1904,7 +1973,7 @@
                     document.getElementById('new-user-username').value = user.usuario;
                     document.getElementById('new-user-password').value = user.senha; // Cuidado ao preencher senhas
                     document.getElementById('new-user-level').value = user.nivel;
-                    document.getElementById('add-user-form').setAttribute('data-editing-firebase-uid', user.firebaseUid); // Armazena o firebaseUid do usuário a ser editado
+                    document.getElementById('add-user-form').setAttribute('data-editing-app-doc-id', user.appDocId); // Armazena o appDocId do usuário a ser editado
                 });
                 actionDiv.appendChild(editBtn);
 
@@ -1932,25 +2001,25 @@
 
         document.getElementById('user-search').addEventListener('input', (e) => {
             currentPageUsers = 1;
-            renderUserList(currentPageUsers, e.target.value);
+            renderUserList(currentPageUsers, e.target.value.trim()); // Trim aqui
         });
 
         document.getElementById('add-user-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const form = e.target;
-            const editingFirebaseUid = form.getAttribute('data-editing-firebase-uid');
+            const editingAppDocId = form.getAttribute('data-editing-app-doc-id');
 
             // Crie uma cópia dos dados para evitar modificações diretas no objeto original
             const userData = {
-                id: form['new-user-id'].value,
-                nome: form['new-user-name'].value,
-                usuario: form['new-user-username'].value,
-                senha: form['new-user-password'].value,
-                nivel: form['new-user-level'].value,
+                id: form['new-user-id'].value.trim(), // ID USINA
+                nome: form['new-user-name'].value.trim(),
+                usuario: form['new-user-username'].value.trim(),
+                senha: form['new-user-password'].value.trim(),
+                nivel: form['new-user-level'].value.trim(), // Trim aqui
                 ativo: true,
             };
 
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 showModal('Erro de Permissão', 'Você precisa estar logado para adicionar/editar usuários.');
                 console.warn('Operação negada: Usuário não autenticado para salvar usuário.');
                 return;
@@ -1960,8 +2029,8 @@
             let canSave = false;
             let reason = '';
 
-            if (editingFirebaseUid) { // Atualização
-                if (currentUser.firebaseUid === editingFirebaseUid) { // Auto-edição
+            if (editingAppDocId) { // Atualização de usuário existente
+                if (currentUser.appDocId === editingAppDocId) { // Auto-edição
                     // Permite auto-edição, mas impede que o usuário mude seu próprio nível se não for master
                     if (currentUser.nivel !== 'master' && userData.nivel !== currentUser.nivel) {
                         reason = 'Você não pode alterar seu próprio nível de acesso.';
@@ -1970,10 +2039,10 @@
                         reason = 'Auto-edição permitida.';
                     }
                 } else if (currentUser.nivel === 'master') { // Master editando outro
-                    // Master pode editar qualquer uno, exceto mudar o nível de outro master para não-master
+                    // Master pode editar qualquer um, exceto rebaixar outro master
                     try {
                         // Acessa a coleção 'users' diretamente
-                        const targetUserDocRef = doc(db, COLLECTIONS.USERS, editingFirebaseUid);
+                        const targetUserDocRef = doc(db, COLLECTIONS.USERS, editingAppDocId);
                         const targetUserDocSnap = await retryWithExponentialBackoff(() => getDoc(targetUserDocRef));
                         if (targetUserDocSnap.exists()) {
                             const targetUserData = targetUserDocSnap.data();
@@ -1994,8 +2063,23 @@
                 } else {
                     reason = 'Você não tem permissão para editar outros usuários.';
                 }
-            } else { // Criação
+            } else { // Criação de novo usuário
                 if (currentUser.nivel === 'master') {
+                    // Verifica por "usuario" ou "id" duplicados antes de criar
+                    const qUser = query(collection(db, COLLECTIONS.USERS), where("usuario", "==", userData.usuario));
+                    const userSnapshot = await retryWithExponentialBackoff(() => getDocs(qUser));
+
+                    const qId = query(collection(db, COLLECTIONS.USERS), where("id", "==", userData.id));
+                    const idSnapshot = await retryWithExponentialBackoff(() => getDocs(qId));
+
+                    if (!userSnapshot.empty) {
+                        showModal('Erro', 'Já existe um usuário com este "Usuário (Login)". Por favor, use um diferente.');
+                        return;
+                    }
+                    if (!idSnapshot.empty) {
+                        showModal('Erro', 'Já existe um usuário com este "ID USINA". Por favor, use um diferente.');
+                        return;
+                    }
                     canSave = true;
                     reason = 'Master pode criar novos usuários.';
                 } else {
@@ -2013,29 +2097,27 @@
             try {
                 let docRef;
                 let message;
-                let finalFirebaseUid;
 
-                if (editingFirebaseUid) {
-                    // Acessa a coleção 'users' diretamente
-                    docRef = doc(db, COLLECTIONS.USERS, editingFirebaseUid);
-                    finalFirebaseUid = editingFirebaseUid;
+                if (editingAppDocId) {
+                    // Se estiver editando, usa o ID do documento existente
+                    docRef = doc(db, COLLECTIONS.USERS, editingAppDocId);
                     message = 'Usuário atualizado com sucesso!';
-                    form.removeAttribute('data-editing-firebase-uid');
+                    form.removeAttribute('data-editing-app-doc-id');
+                    // Não altera actualFirebaseAuthUid ao editar, a menos que seja explicitamente um re-link
+                    // O valor existente em 'actualFirebaseAuthUid' deve ser preservado.
+                    // Para garantir que ele exista no objeto, podemos fazer um merge.
+                    await retryWithExponentialBackoff(() => setDoc(docRef, userData, { merge: true }));
                 } else {
-                    // Para novos usuários, o ID do documento será um UID Firebase gerado aleatoriamente
-                    finalFirebaseUid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                    // Acessa a coleção 'users' diretamente
-                    docRef = doc(db, COLLECTIONS.USERS, finalFirebaseUid);
+                    // Para novos usuários, gera um UUID aleatório como ID do documento no Firestore
+                    const newAppDocId = crypto.randomUUID();
+                    docRef = doc(db, COLLECTIONS.USERS, newAppDocId);
                     userData.criadoEm = serverTimestamp(); // Adiciona criadoEm apenas para novos usuários
+                    userData.actualFirebaseAuthUid = null; // Novos usuários começam sem vínculo Firebase Auth UID
+                    await retryWithExponentialBackoff(() => setDoc(docRef, userData)); // Usar setDoc sem merge para novos
                     message = 'Novo usuário salvo com sucesso!';
                 }
                 
-                // Garante que o firebaseAuthUid seja sempre o ID do documento
-                userData.firebaseAuthUid = finalFirebaseUid;
-
                 console.log("[ADD/EDIT USER] Tentando salvar usuário no Firestore. Caminho:", docRef.path, "Dados:", userData); 
-                await retryWithExponentialBackoff(() => setDoc(docRef, userData, { merge: true }));
-                console.log("[ADD/EDIT USER] Usuário salvo com sucesso no Firestore!");
                 showToast(message);
                 form.reset();
             } catch (error) {
@@ -2053,7 +2135,7 @@
         document.getElementById('import-xlsx-btn').addEventListener('click', () => {
             if (!currentUser || currentUser.nivel !== 'master') {
                 showModal('Erro de Permissão', 'Você não tem permissão para importar usuários.');
-                console.warn(`Operação negada: Usuário ${currentUser ? currentUser.firebaseUid : 'N/A'} (${currentUser ? currentUser.nivel : 'N/A'}) tentou importar XLSX sem permissão.`);
+                console.warn(`Operação negada: Usuário ${currentUser ? currentUser.appDocId : 'N/A'} (${currentUser ? currentUser.nivel : 'N/A'}) tentou importar XLSX sem permissão.`);
                 return;
             }
             document.getElementById('upload-xlsx-input').click();
@@ -2076,17 +2158,17 @@
                         console.log(`[IMPORT XLSX] Iniciando importação de ${json.length} linhas.`);
 
                         for (const row of json) {
-                            const firebaseUidForImport = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                            const newAppDocId = crypto.randomUUID(); // Gerar UUID para cada novo documento
 
                             const userData = {
-                                nome: row.nome,
-                                usuario: row.usuario,
-                                senha: row.senha,
-                                nivel: row.nivelAcesso,
-                                id: row.id,
+                                nome: String(row.nome || '').trim(),
+                                usuario: String(row.usuario || '').trim(),
+                                senha: String(row.senha || '').trim(),
+                                nivel: String(row.nivelAcesso || '').trim(),
+                                id: String(row.id || '').trim(), // ID USINA
                                 ativo: true, 
                                 criadoEm: serverTimestamp(),
-                                firebaseAuthUid: firebaseUidForImport // firebaseAuthUid é o ID do documento
+                                actualFirebaseAuthUid: null, // Inicialmente null para usuários importados
                             };
 
                             if (!userData.nome || !userData.usuario || !userData.senha || !userData.nivel || !userData.id) {
@@ -2096,10 +2178,27 @@
                             }
 
                             try {
-                                // Acessa a coleção 'users' diretamente
-                                const docRef = doc(db, COLLECTIONS.USERS, firebaseUidForImport); 
-                                console.log(`[IMPORT XLSX] Tentando salvar usuário importado: ${userData.usuario} com ID: ${firebaseUidForImport}`);
-                                await retryWithExponentialBackoff(() => setDoc(docRef, userData, { merge: true }));
+                                // Verificar duplicidade de 'usuario' ou 'id' antes de adicionar
+                                const qUser = query(collection(db, COLLECTIONS.USERS), where("usuario", "==", userData.usuario));
+                                const userSnapshot = await retryWithExponentialBackoff(() => getDocs(qUser));
+                                const qId = query(collection(db, COLLECTIONS.USERS), where("id", "==", userData.id));
+                                const idSnapshot = await retryWithExponentialBackoff(() => getDocs(qId));
+
+                                if (!userSnapshot.empty) {
+                                    console.warn(`[IMPORT XLSX] Usuário '${userData.usuario}' já existe. Linha ignorada.`);
+                                    errorCount++;
+                                    continue;
+                                }
+                                if (!idSnapshot.empty) {
+                                    console.warn(`[IMPORT XLSX] ID USINA '${userData.id}' já existe. Linha ignorada.`);
+                                    errorCount++;
+                                    continue;
+                                }
+
+                                // Acessa a coleção 'users' diretamente, usando o UUID como ID do documento
+                                const docRef = doc(db, COLLECTIONS.USERS, newAppDocId); 
+                                console.log(`[IMPORT XLSX] Tentando salvar usuário importado: ${userData.usuario} com ID: ${newAppDocId}`);
+                                await retryWithExponentialBackoff(() => setDoc(docRef, userData));
                                 successCount++;
                                 console.log(`[IMPORT XLSX] Usuário importado salvo com sucesso: ${userData.usuario}`);
                             } catch (error) {
@@ -2121,7 +2220,7 @@
         document.getElementById('import-csv-btn').addEventListener('click', () => {
             if (!currentUser || currentUser.nivel !== 'master') {
                 showModal('Erro de Permissão', 'Você não tem permissão para importar usuários.');
-                console.warn(`Operação negada: Usuário ${currentUser ? currentUser.firebaseUid : 'N/A'} (${currentUser ? currentUser.nivel : 'N/A'}) tentou importar CSV sem permissão.`);
+                console.warn(`Operação negada: Usuário ${currentUser ? currentUser.appDocId : 'N/A'} (${currentUser ? currentUser.nivel : 'N/A'}) tentou importar CSV sem permissão.`);
                 return;
             }
             document.getElementById('upload-csv-input').click();
@@ -2160,17 +2259,17 @@
                                 rowData[header] = values[index];
                             });
 
-                            const firebaseUidForImport = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                            const newAppDocId = crypto.randomUUID(); // Gerar UUID para cada novo documento
 
                             const userData = {
-                                nome: rowData.nome,
-                                usuario: rowData.usuario,
-                                senha: rowData.senha,
-                                nivel: rowData.nivelAcesso,
-                                id: rowData.id,
+                                nome: String(rowData.nome || '').trim(),
+                                usuario: String(rowData.usuario || '').trim(),
+                                senha: String(rowData.senha || '').trim(),
+                                nivel: String(rowData.nivelAcesso || '').trim(),
+                                id: String(rowData.id || '').trim(), // ID USINA
                                 ativo: true, 
                                 criadoEm: serverTimestamp(),
-                                firebaseAuthUid: firebaseUidForImport // firebaseAuthUid é o ID do documento
+                                actualFirebaseAuthUid: null, // Inicialmente null
                             };
 
                             if (!userData.nome || !userData.usuario || !userData.senha || !userData.nivel || !userData.id) {
@@ -2180,10 +2279,27 @@
                             }
 
                             try {
-                                // Acessa a coleção 'users' diretamente
-                                const docRef = doc(db, COLLECTIONS.USERS, firebaseUidForImport); 
-                                console.log(`[IMPORT CSV] Tentando salvar usuário importado: ${userData.usuario} com ID: ${firebaseUidForImport}`);
-                                await retryWithExponentialBackoff(() => setDoc(docRef, userData, { merge: true }));
+                                // Verificar duplicidade de 'usuario' ou 'id' antes de adicionar
+                                const qUser = query(collection(db, COLLECTIONS.USERS), where("usuario", "==", userData.usuario));
+                                const userSnapshot = await retryWithExponentialBackoff(() => getDocs(qUser));
+                                const qId = query(collection(db, COLLECTIONS.USERS), where("id", "==", userData.id));
+                                const idSnapshot = await retryWithExponentialBackoff(() => getDocs(qId));
+
+                                if (!userSnapshot.empty) {
+                                    console.warn(`[IMPORT CSV] Usuário '${userData.usuario}' já existe. Linha ignorada.`);
+                                    errorCount++;
+                                    continue;
+                                }
+                                if (!idSnapshot.empty) {
+                                    console.warn(`[IMPORT CSV] ID USINA '${userData.id}' já existe. Linha ignorada.`);
+                                    errorCount++;
+                                    continue;
+                                }
+
+                                // Acessa a coleção 'users' diretamente, usando o UUID como ID do documento
+                                const docRef = doc(db, COLLECTIONS.USERS, newAppDocId); 
+                                console.log(`[IMPORT CSV] Tentando salvar usuário importado: ${userData.usuario} com ID: ${newAppDocId}`);
+                                await retryWithExponentialBackoff(() => setDoc(docRef, userData));
                                 successCount++;
                                 console.log(`[IMPORT CSV] Usuário importado salvo com sucesso: ${userData.usuario}`);
                             } catch (error) {
@@ -2214,23 +2330,23 @@
         document.getElementById('change-password-modal-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const form = e.target;
-            const currentPassword = form['current-password-modal'].value;
-            const newPassword = form['new-password-modal'].value;
-            const confirmNewPassword = form['confirm-new-password-modal'].value;
+            const currentPassword = form['current-password-modal'].value.trim();
+            const newPassword = form['new-password-modal'].value.trim();
+            const confirmNewPassword = form['confirm-new-password-modal'].value.trim();
 
             if (newPassword !== confirmNewPassword) {
                 showModal('Erro', 'A nova senha e a confirmação de senha não coincidem.');
                 return;
             }
 
-            if (!currentUser) {
+            if (!currentUser || !currentUser.appDocId) {
                 showModal('Erro', 'Usuário não autenticado. Faça login novamente.');
                 return;
             }
 
             try {
                 // Acessa a coleção 'users' diretamente
-                const userDocRef = doc(db, COLLECTIONS.USERS, currentUser.firebaseUid);
+                const userDocRef = doc(db, COLLECTIONS.USERS, currentUser.appDocId); // Usa appDocId
                 const userDocSnap = await retryWithExponentialBackoff(() => getDoc(userDocRef));
                 const userData = userDocSnap.data();
 
@@ -2239,7 +2355,7 @@
                     return;
                 }
 
-                console.log(`[CHANGE PASSWORD] Alterando senha para usuário ${currentUser.usuario} (UID: ${currentUser.firebaseUid}).`);
+                console.log(`[CHANGE PASSWORD] Alterando senha para usuário ${currentUser.usuario} (Doc ID: ${currentUser.appDocId}).`);
                 await retryWithExponentialBackoff(() => updateDoc(userDocRef, { senha: newPassword }));
                 showToast('Senha alterada com sucesso!', 'success');
                 hideModal();
@@ -2452,10 +2568,10 @@
                     const userAvatarDiv = document.getElementById('user-avatar');
                     userAvatarDiv.innerHTML = '';
                     userAvatarDiv.appendChild(avatarImg);
-                    localStorage.setItem(`avatar-${currentUser.firebaseUid}`, e.target.result);
+                    localStorage.setItem(`avatar-${currentUser.appDocId}`, e.target.result); // Usa appDocId para avatar
                     hideModal();
                     showToast('Avatar atualizado com sucesso!', 'success');
-                    console.log(`Avatar atualizado para usuário: ${currentUser.firebaseUid}`);
+                    console.log(`Avatar atualizado para usuário: ${currentUser.appDocId}`);
                 };
                 reader.readAsDataURL(file);
             }
