@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🪛 InspCampo 🪛</title>
+    <title>🛠️🪛 InspCampo 🛠️🪛</title>
     <!-- Tailwind CSS para estilização (CDN para ambiente de desenvolvimento/Canvas) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome para ícones -->
@@ -176,7 +176,7 @@
         }
 
         .animate-fade-slide-in {
-            animation: fadeAndSlideIn 0.8s ease-out forwards;
+            animation: fadeAndSlideIn 2s ease-out forwards; /* Slower animation */
         }
 
         /* Toggle switch specific styles */
@@ -295,7 +295,8 @@
 
     <!-- Interface Principal do Aplicativo -->
     <div id="main-app" class="container mx-auto p-6 md:p-8 hidden">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <!-- TOP HEADER AREA: Now with a white background and card-like styling -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row justify-between items-center">
             <!-- Título e Logo ajustados para responsividade -->
             <div class="flex flex-col items-center md:items-start w-full md:w-auto mb-4 md:mb-0">
                 <h1 class="text-3xl md:text-4xl font-bold text-gray-800 text-center md:text-left mb-2 whitespace-nowrap">Sistema de Checklists</h1>
@@ -318,6 +319,7 @@
                 </button>
             </div>
         </div>
+        <!-- END TOP HEADER AREA -->
 
         <!-- Abas - Espaçamento diminuído para space-x-1 -->
         <div class="flex flex-wrap justify-center space-x-1 md:space-x-2 mb-8 border-b border-gray-200">
@@ -565,7 +567,7 @@
             <div id="report-content" class="prose max-w-none"></div>
             <div class="flex justify-end space-x-4 mt-6 print:hidden">
                 <button id="export-pdf-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full"><i class="fas fa-file-pdf mr-2"></i>Exportar PDF</button>
-                <button id="export-xlsx-btn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full"><i class="fas fa-file-excel mr-2"></i>Exportar XLSX</button>
+                <button id="export-xlsx-btn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full ml-4"><i class="fas fa-file-excel mr-2"></i>Exportar XLSX</button>
                 <button id="share-report-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-full ml-4"><i class="fas fa-share-alt mr-2"></i>Compartilhar</button>
                 <button id="report-modal-close-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full">Fechar</button>
             </div>
@@ -1073,13 +1075,9 @@
             if (lastUser) {
                 document.getElementById('username').value = lastUser;
             }
-            // Resetar a animação para que ela ocorra novamente ao exibir a tela de login
-            const loginLogo = document.getElementById('login-logo');
-            if (loginLogo) {
-                loginLogo.classList.remove('animate-fade-slide-in');
-                void loginLogo.offsetWidth; // Trigger reflow
-                loginLogo.classList.add('animate-fade-slide-in');
-            }
+            // A animação agora é controlada apenas pela classe `animate-fade-slide-in` presente no HTML inicial,
+            // garantindo que ela ocorra uma única vez no carregamento da página.
+            // As linhas para re-animar a logo foram removidas daqui.
         };
 
         // Lógica após o login bem-sucedido
@@ -1613,7 +1611,7 @@
                 <div class="section-card p-4 bg-gray-50 rounded-lg shadow-inner mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <label class="block flex-grow mr-4">
-                            <span class="text-sm font-medium text-gray-700">Título da Seção</span>
+                            <span class="text-sm font-medium text-gray-700">Sistema</span>
                             <input type="text" name="section-title" value="${sectionTitle}" class="mt-1 block w-full rounded-md border border-gray-400 shadow-sm" required>
                         </label>
                         <button type="button" class="remove-section-btn text-red-500 hover:text-red-700 text-2xl" title="Remover Seção">&times;</button>
@@ -1632,7 +1630,7 @@
             const itemOptionsHiddenClass = item.itemType === 'dropdown' ? '' : 'hidden';
             return `
                 <div class="flex items-center space-x-2">
-                    <input type="text" name="item-text" value="${item.itemText || ''}" placeholder="Texto do item" class="flex-grow rounded-md border border-gray-400 shadow-sm text-sm" required>
+                    <input type="text" name="item-text" value="${item.itemText || ''}" placeholder="Componente" class="flex-grow rounded-md border border-gray-400 shadow-sm text-sm" required>
                     <select name="item-type" class="rounded-md border border-gray-400 shadow-sm text-sm">
                         <option value="radio" ${item.itemType === 'radio' ? 'selected' : ''}>OK/NÃO OK</option>
                         <option value="texto" ${item.itemType === 'texto' ? 'selected' : ''}>Texto</option>
@@ -2522,7 +2520,7 @@
                 usuario: form['new-user-username'].value.trim(),
                 senha: form['new-user-password'].value.trim(),
                 nivel: form['new-user-level'].value.trim(),
-                ativo: true,
+                ativo: true, 
                 acessoAbas: selectedTabAccess // Adiciona o campo acessoAbas
             };
 
@@ -2998,7 +2996,7 @@
         // Helper function to format the checklist report for WhatsApp
         const formatChecklistReportForWhatsApp = (checklist) => {
             let text = `Relatório do Checklist\n`;
-            text += `${checklist.checklist.title}\n`;
+            text += `CAMINHAO\n`; // Adicionado "CAMINHAO" conforme o exemplo
             text += `Frota: ${checklist.frota}\n`;
             text += `Nº OS: ${checklist.os}\n`;
             text += `Aplicador: ${checklist.aplicador.nome} (${checklist.aplicador.id})\n`;
@@ -3011,8 +3009,8 @@
             let statusPcmaDisplay = '';
 
             if (checklist.needsValidation === false) {
-                statusLiderDisplay = 'Sem Necessidade de aprovação';
-                statusPcmaDisplay = 'Sem Necessidade de aprovação';
+                statusLiderDisplay = 'aprovado'; // Mudar para "aprovado" se não precisar de validação
+                statusPcmaDisplay = 'aprovado'; // Mudar para "aprovado" se não precisar de validação
             } else {
                 statusLiderDisplay = checklist.status.lider;
                 statusPcmaDisplay = checklist.status.pcma;
@@ -3021,21 +3019,26 @@
             text += `Status PCMA: ${statusPcmaDisplay}\n\n`;
 
             checklist.checklist.sections.forEach(section => {
-                text += `${section.sectionTitle}\n`;
+                // Removido o título da seção se for "Teste" para ficar como o exemplo
+                if (section.sectionTitle.toLowerCase() !== 'teste') {
+                    text += `${section.sectionTitle}\n`;
+                }
+                
                 section.items.forEach(item => {
                     let responseValue = '';
+                    let itemTextForReport = item.itemText; // Usar o texto do item como está
+
                     if (item.status) {
-                        responseValue = item.status.toUpperCase();
+                        responseValue = item.status.toUpperCase() === 'OK' ? 'OK' : item.observacao || 'NÃO OK';
                     } else if (item.value) {
                         responseValue = item.value;
                     }
-                    text += `${item.itemText}: ${responseValue}`;
-                    if (item.observacao && item.observacao.trim() !== '') { // Verifica se a observação não está vazia
-                        text += ` (Obs: ${item.observacao})`;
-                    }
-                    text += `\n`;
+                    text += `${itemTextForReport}: ${responseValue}\n`;
                 });
-                text += `\n`; // Adiciona uma linha em branco entre as seções para legibilidade
+                // Adiciona uma linha em branco entre as seções para legibilidade, exceto se for a última seção
+                if (checklist.checklist.sections.indexOf(section) < checklist.checklist.sections.length - 1) {
+                    text += `\n`; 
+                }
             });
 
             return text;
