@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🛠️🪛 InspCampo 🛠️🪛</title>
+    <title>🪛 InspCampo 🪛</title>
     <!-- Tailwind CSS para estilização (CDN para ambiente de desenvolvimento/Canvas) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome para ícones -->
@@ -1166,7 +1166,7 @@
                 if (btn) btn.classList.remove('hidden');
             });
 
-            // Desinscreve todos os listeners antigos para evitar duplicações e vazamentos de memória
+            // Desinscreve todos os listeners antigos para evitar duplicações e vazamentos
             console.log("[setupTabs] Desinscrevendo listeners antigos...");
             if (unsubscribeChecklists) { unsubscribeChecklists(); unsubscribeChecklists = null; }
             if (unsubscribePendingLider) { unsubscribePendingLider(); unsubscribePendingLider = null; }
@@ -2995,9 +2995,54 @@
             }
         });
 
+        // Helper function to format the checklist report for WhatsApp
+        const formatChecklistReportForWhatsApp = (checklist) => {
+            let text = `Relatório do Checklist\n`;
+            text += `${checklist.checklist.title}\n`;
+            text += `Frota: ${checklist.frota}\n`;
+            text += `Nº OS: ${checklist.os}\n`;
+            text += `Aplicador: ${checklist.aplicador.nome} (${checklist.aplicador.id})\n`;
+            text += `Mecânico: ${checklist.mecanico || 'Não informado'}\n`; // Adicionado fallback para Mecânico
+            text += `Data: ${new Date(checklist.criadoEm).toLocaleDateString('pt-BR')}\n`;
+            text += `Hora Inicial: ${checklist.horaInicial}\n`;
+            text += `Hora Final: ${checklist.horaFinal}\n\n`;
+
+            let statusLiderDisplay = '';
+            let statusPcmaDisplay = '';
+
+            if (checklist.needsValidation === false) {
+                statusLiderDisplay = 'Sem Necessidade de aprovação';
+                statusPcmaDisplay = 'Sem Necessidade de aprovação';
+            } else {
+                statusLiderDisplay = checklist.status.lider;
+                statusPcmaDisplay = checklist.status.pcma;
+            }
+            text += `Status Líder: ${statusLiderDisplay}\n`;
+            text += `Status PCMA: ${statusPcmaDisplay}\n\n`;
+
+            checklist.checklist.sections.forEach(section => {
+                text += `${section.sectionTitle}\n`;
+                section.items.forEach(item => {
+                    let responseValue = '';
+                    if (item.status) {
+                        responseValue = item.status.toUpperCase();
+                    } else if (item.value) {
+                        responseValue = item.value;
+                    }
+                    text += `${item.itemText}: ${responseValue}`;
+                    if (item.observacao && item.observacao.trim() !== '') { // Verifica se a observação não está vazia
+                        text += ` (Obs: ${item.observacao})`;
+                    }
+                    text += `\n`;
+                });
+                text += `\n`; // Adiciona uma linha em branco entre as seções para legibilidade
+            });
+
+            return text;
+        };
+
         document.getElementById('share-report-btn').addEventListener('click', async () => {
             const checklist = allAppliedChecklists.find(c => c.id === document.getElementById('report-modal').getAttribute('data-id'));
-            const reportContent = document.getElementById('report-content');
             const frotaNumber = document.getElementById('report-modal').getAttribute('data-frota') || '000000';
 
             if (!checklist) {
@@ -3005,47 +3050,37 @@
                 return;
             }
 
-            try {
-                const pdfBlob = await generatePdfBlob(reportContent, frotaNumber);
-                const pdfFile = new File([pdfBlob], `relatorio-checklist - Frota -${frotaNumber}.pdf`, { type: 'application/pdf' });
+            // 1. Gera o texto formatado para o WhatsApp
+            const whatsappText = formatChecklistReportForWhatsApp(checklist);
 
-                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-                    console.log(`Tentando compartilhar PDF para Frota: ${frotaNumber} via Web Share API.`);
+            try {
+                // Tenta a Web Share API para compartilhamento de texto
+                // Remove navigator.canShare({ files: [] }) para não tentar compartilhar arquivos com a Web Share API
+                if (navigator.canShare && navigator.canShare({ text: whatsappText, title: `Relatório InspCampo - Frota ${frotaNumber}` })) {
+                    console.log(`Tentando compartilhar texto para Frota: ${frotaNumber} via Web Share API.`);
                     await navigator.share({
-                        files: [pdfFile],
                         title: `Relatório InspCampo - Frota ${frotaNumber}`,
-                        text: `Relatório de Checklist para Frota ${frotaNumber} gerado em InspCampo.`,
+                        text: whatsappText,
                     });
-                    showToast('Relatório PDF compartilhado com sucesso!', 'success');
-                    console.log(`Relatório PDF compartilhado com sucesso para Frota: ${frotaNumber}.`);
+                    showToast('Relatório de texto compartilhado com sucesso!', 'success');
+                    console.log(`Relatório de texto compartilhado com sucesso para Frota: ${frotaNumber}.`);
                 } else {
-                    // Fallback: download PDF and inform user
-                    const a = document.createElement('a');
-                    a.href = URL.createObjectURL(pdfBlob);
-                    a.download = `relatorio-checklist - Frota -${frotaNumber}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(a.href);
-                    showModal('Compartilhar Relatório', 'Seu navegador não suporta o compartilhamento direto de arquivos. O relatório foi baixado para o seu dispositivo.');
-                    console.warn(`Compartilhamento Web Share API não suportado. PDF baixado para Frota: ${frotaNumber}.`);
+                    // Fallback para link direto do WhatsApp (apenas texto)
+                    const encodedText = encodeURIComponent(whatsappText);
+                    const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+                    window.open(whatsappUrl, '_blank');
+                    showToast('Relatório de texto aberto no WhatsApp!', 'success');
+                    console.log(`Relatório de texto aberto no WhatsApp para Frota: ${frotaNumber}.`);
                 }
             } catch (error) {
-                console.error('Erro ao compartilhar PDF:', error);
+                console.error('Erro ao compartilhar relatório:', error);
                 if (error.name === 'AbortError') {
                     showToast('Compartilhamento cancelado.', 'error');
                     console.log('Compartilhamento cancelado pelo usuário.');
                 } else {
-                    showModal('Erro ao Compartilhar', 'Não foi possível compartilhar o relatório PDF. ' + error.message + ' O relatório foi baixado para o seu dispositivo.');
-                    // Fallback: download PDF if sharing failed
-                    const a = document.createElement('a');
-                    a.href = URL.createObjectURL(pdfBlob);
-                    a.download = `relatorio-checklist - Frota -${frotaNumber}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(a.href);
-                    console.error(`Falha no compartilhamento de PDF para Frota: ${frotaNumber}. PDF baixado como fallback.`);
+                    // Erro geral para compartilhamento de texto
+                    showModal('Erro ao Compartilhar', 'Não foi possível compartilhar o relatório. ' + error.message);
+                    console.error(`Falha no compartilhamento de texto para Frota: ${frotaNumber}.`);
                 }
             }
         });
