@@ -72,6 +72,11 @@
             width: 90%;
             max-width: 800px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            /* INÍCIO DA ALTERAÇÃO PARA ROLAGEM DO MODAL */
+            max-height: 90vh; /* Define uma altura máxima baseada na viewport */
+            overflow-y: auto; /* Adiciona barra de rolagem vertical se o conteúdo exceder a altura máxima */
+            overflow-x: hidden; /* Garante que não haja rolagem horizontal desnecessária */
+            /* FIM DA ALTERAÇÃO */
         }
         /* Estilos para o toast de notificação */
         #notification-toast {
@@ -841,7 +846,7 @@
                 toast.classList.remove('show');
             }, 3000);
         };
-        
+
         // Função para mostrar ou esconder o botão de toggle de senha
         const togglePasswordVisibility = (inputSelector, buttonSelector) => {
             const passwordInput = document.querySelector(inputSelector);
@@ -919,7 +924,7 @@
                                 console.log("[onAuthStateChanged] Login com token personalizado bem-sucedido:", userCredential.user.uid);
                                 // A partir daqui, o onAuthStateChanged será chamado novamente com o usuário autenticado.
                                 // Não faça nada mais aqui para evitar loops ou comportamento inesperado.
-                                return; 
+                                return;
                             } catch (tokenError) {
                                 console.error("[onAuthStateChanged] Erro ao fazer login com token personalizado:", tokenError);
                                 // Se o token falhar, continue com o fluxo normal (anônimo ou login).
@@ -935,7 +940,7 @@
                         if (!querySnapshot.empty) {
                             // Encontrou um perfil de usuário do aplicativo. Prioriza o primeiro encontrado se houver múltiplos (não deveria)
                             const userDoc = querySnapshot.docs[0];
-                            currentUser = { 
+                            currentUser = {
                                 appDocId: userDoc.id, // O ID do documento no Firestore (UUID gerado pelo app)
                                 actualFirebaseAuthUid: user.uid, // O UID do Firebase Auth da sessão atual
                                 ...userDoc.data(),
@@ -984,13 +989,13 @@
                 // 1. Encontra o perfil de usuário do aplicativo pelo username e senha
                 // A busca agora é estritamente por 'usuario' e 'senha' para encontrar o documento de perfil permanente.
                 const q = query(
-                    collection(db, COLLECTIONS.USERS), 
+                    collection(db, COLLECTIONS.USERS),
                     where("usuario", "==", usernameInput),
                     where("senha", "==", passwordInput)
                 );
                 console.log(`[Login Submit] Consultando Firestore por usuário: ${usernameInput}`);
                 const querySnapshot = await retryWithExponentialBackoff(() => getDocs(q));
-                
+
                 let foundUserDoc = null;
 
                 if (querySnapshot.empty) {
@@ -1005,7 +1010,7 @@
                 const userDataFromFirestore = foundUserDoc.data();
 
                 // 2. Garante que haja um Firebase Auth UID para a sessão atual (pode ser anônimo)
-                let firebaseAuthUser = auth.currentUser; 
+                let firebaseAuthUser = auth.currentUser;
                 if (!firebaseAuthUser || !firebaseAuthUser.uid) {
                     console.warn("[Login Submit] Nenhuma sessão ativa do Firebase Auth. Tentando login anônimo de fallback.");
                     try {
@@ -1018,7 +1023,7 @@
                         return;
                     }
                 }
-                if (!firebaseAuthUser || !firebaseAuthUser.uid) { 
+                if (!firebaseAuthUser || !firebaseAuthUser.uid) {
                      console.error("[Login Submit] Erro crítico: firebaseAuthUser é nulo ou não tem UID após todas as tentativas.");
                      showModal('Erro Interno', 'Falha crítica na autenticação. Recarregue a página.');
                      return;
@@ -1036,7 +1041,7 @@
                 // Atualiza o perfil de usuário com o UID da sessão atual do Firebase Auth
                 // Esta operação requer que as regras de segurança permitam que o user.uid atualize o campo actualFirebaseAuthUid.
                 await retryWithExponentialBackoff(() => updateDoc(userDocRef, { actualFirebaseAuthUid: currentFirebaseAuthUid }));
-                
+
                 console.log(`[Login Submit] Perfil de usuário ${appUserId} vinculado ao Firebase Auth UID: ${currentFirebaseAuthUid} com sucesso.`);
 
                 // 4. Atualiza o objeto currentUser global
@@ -1053,9 +1058,9 @@
                 } else {
                     localStorage.removeItem('lastUser');
                 }
-                
+
                 handlePostLogin();
-                
+
             } catch (error) {
                 console.error("[Login Submit] Erro durante o login:", error);
                 // Exibe uma mensagem mais específica se for um erro de permissão
@@ -1120,7 +1125,7 @@
                 // Se não há acessoAbas configurado, usa a aba padrão do nível
                 initialTab = defaultTabsByRole[currentUser.nivel] || 'aplicador'; // Fallback para aplicador se não houver nível/config
             }
-            
+
             // Verifica se a aba inicial realmente existe entre as visíveis para o usuário.
             // Isso evita que um usuário seja direcionado para uma aba que foi desabilitada para ele.
             const visibleTabButtons = document.querySelectorAll('.tab-button:not(.hidden)');
@@ -1144,7 +1149,7 @@
             // Default tabs by role (used if no specific 'acessoAbas' is set)
             const defaultTabsByRole = {
                 'master': ['aplicador', 'lider', 'pcma', 'realizados', 'novos', 'cadastro'],
-                'pcma': ['pcma', 'realizados', 'novos'], 
+                'pcma': ['pcma', 'realizados', 'novos'],
                 'lider': ['lider', 'realizados'],
                 'aplicador': ['aplicador', 'realizados'],
                 'portaria': ['realizados']
@@ -1286,7 +1291,7 @@
         const renderTagCloud = (containerId, checklists) => {
             const tagCloudContainer = document.getElementById(`tag-cloud-${containerId}`);
             tagCloudContainer.innerHTML = '';
-            
+
             // Determine the current active tag for this container
             let currentActiveTagId;
             if (containerId === 'aplicador') {
@@ -1300,7 +1305,7 @@
                 button.textContent = checklist.title;
                 button.setAttribute('data-id', checklist.id);
                 button.classList.add('tag-button', 'bg-white', 'text-gray-700', 'shadow-sm', 'hover:bg-gray-100');
-                
+
                 // Set active class if it's the current active tag
                 if (checklist.id === currentActiveTagId) {
                     button.classList.add('active', 'bg-blue-500', 'text-white');
@@ -1325,7 +1330,7 @@
                         // Select a new tag
                         // Remove active class from all other buttons in this container
                         document.querySelectorAll(`#tag-cloud-${containerId} .tag-button`).forEach(btn => btn.classList.remove('active', 'bg-blue-500', 'text-white'));
-                        
+
                         button.classList.add('active', 'bg-blue-500', 'text-white');
                         if (containerId === 'aplicador') {
                             activeAplicadorTagId = checklist.id;
@@ -1353,7 +1358,7 @@
             const titleElement = document.getElementById('aplicador-checklist-title');
             const sectionsContainer = document.getElementById('aplicador-sections-container');
             const needsValidationStatus = document.getElementById('aplicador-needs-validation-status');
-            
+
             titleElement.textContent = checklist.title;
             sectionsContainer.innerHTML = '';
             form.setAttribute('data-checklist-id', checklist.id);
@@ -1380,16 +1385,16 @@
             });
 
             document.getElementById('end-time').value = '';
-            
+
             checklist.sections.forEach((section, sectionIndex) => {
                 const sectionDiv = document.createElement('div');
                 sectionDiv.classList.add('p-4', 'bg-gray-50', 'rounded-lg', 'shadow-inner');
                 sectionDiv.innerHTML = `<h4 class="text-lg font-bold text-gray-800 mb-2">${section.sectionTitle}</h4>`;
-                
+
                 section.items.forEach((item, itemIndex) => {
                     const itemDiv = document.createElement('div');
                     itemDiv.classList.add('mb-2', 'checklist-item-container');
-                    
+
                     const itemTextContent = String(item.itemText || '').trim(); // Trim aqui
                     const emptyTextClass = itemTextContent.trim() === '' ? 'text-red-500 font-bold' : '';
 
@@ -1398,7 +1403,7 @@
                             ${itemTextContent || 'ITEM SEM TEXTO DEFINIDO NO MODELO!'}
                         </p>
                     `;
-                    
+
                     console.log(`[RENDER] Checklist "${checklist.title}", Seção "${section.sectionTitle}", Item ${itemIndex}: "${itemTextContent}"`);
 
                     if (itemTextContent === '') { // Usa conteúdo trimado para validação
@@ -1406,7 +1411,7 @@
                         // showModal('Aviso', `O texto para o item ${itemIndex + 1} na seção "${sectionTitle}" é obrigatório.`);
                         // Return not necessary here as it's just rendering, validation happens on submit
                     }
-                    
+
                     if (item.itemType === 'radio') {
                         itemHtml += `
                             <div class="flex items-center space-x-4 mt-1">
@@ -1469,7 +1474,7 @@
             const checklistId = form.getAttribute('data-checklist-id');
             const checklistTitle = form.getAttribute('data-checklist-title');
             // Obtém o valor booleano de needsValidation corretamente
-            const needsValidation = form.getAttribute('data-needs-validation') === 'true'; 
+            const needsValidation = form.getAttribute('data-needs-validation') === 'true';
 
             const now = new Date();
             document.getElementById('end-time').value = now.toLocaleString('pt-BR'); // Preenche Hora Final aqui
@@ -1501,11 +1506,11 @@
                 },
                 frota: frotaInput.value.trim(),
                 os: osInput.value.trim(),
-                aplicador: { 
-                    nome: currentUser.nome, 
-                    id: currentUser.id, 
+                aplicador: {
+                    nome: currentUser.nome,
+                    id: currentUser.id,
                     appDocId: currentUser.appDocId, // Adicionado para validação de regras do Firestore
-                }, 
+                },
                 mecanico: form['mecanico-name'].value.trim(),
                 data: now.toLocaleDateString('pt-BR'),
                 horaInicial: form['start-time'].value.trim(),
@@ -1517,22 +1522,22 @@
                 },
                 criadoEm: now.toISOString()
             };
-            
+
             const sections = [];
             const formSections = document.getElementById('aplicador-sections-container').querySelectorAll('.p-4.bg-gray-50');
             for (let sectionIndex = 0; sectionIndex < formSections.length; sectionIndex++) {
                 const sectionDiv = formSections[sectionIndex];
                 const sectionTitleElement = sectionDiv.querySelector('h4');
                 const sectionTitle = sectionTitleElement ? sectionTitleElement.textContent.trim() : `Seção ${sectionIndex + 1}`; // Trim aqui
-                
+
                 const sectionResponses = [];
                 const items = sectionDiv.querySelectorAll('.checklist-item-container');
-                
+
                 for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
                     const itemDiv = items[itemIndex];
                     const itemTextElement = itemDiv.querySelector('.item-text-display');
                     const itemText = itemTextElement ? String(itemTextElement.textContent || '').trim() : ''; // Trim aqui
-                    
+
                     console.log(`[VALIDATION - RADICAL] Checklist "${checklistTitle}", Seção "${sectionTitle}", Item ${itemIndex}: "${itemText}" (Length: ${itemText.length}, Trimmed Length: ${itemText.trim().length})`);
 
                     if (itemText.trim() === '') {
@@ -1540,9 +1545,9 @@
                         showModal('Aviso', `O texto para o item ${itemIndex + 1} na seção "${sectionTitle}" é obrigatório.`);
                         return;
                     }
-                    
+
                     let response = { itemText, status: null, observacao: null, value: null };
-                    
+
                     const radioOk = itemDiv.querySelector(`input[name="section-${sectionIndex}-item-${itemIndex}"][value="ok"]`);
                     const radioNaoOk = itemDiv.querySelector(`input[name="section-${sectionIndex}-item-${itemIndex}"][value="nao-ok"]`);
                     const textField = itemDiv.querySelector(`input[name="section-${sectionIndex}-item-${itemIndex}"][type="text"]`);
@@ -1725,7 +1730,7 @@
             } else {
                 validationToggleContainer.classList.add('hidden');
                 // Para usuários sem permissão, o toggle fica oculto, mas o valor interno é true para forçar validação
-                needsValidationToggle.checked = true; 
+                needsValidationToggle.checked = true;
             }
 
             if (checklist.id) {
@@ -1743,7 +1748,7 @@
                     const sectionDiv = sectionWrapper.firstElementChild;
                     const itemsContainer = sectionDiv.querySelector('.items-container');
                     itemsContainer.innerHTML = '';
-                    
+
                     section.items.forEach(item => {
                         const itemWrapper = document.createElement('div');
                         itemWrapper.innerHTML = createNewItemDivHtml(item);
@@ -1791,7 +1796,7 @@
                 sectionDiv.remove();
             }
         });
-        
+
         // Novo: Botão para limpar campos e criar novo checklist
         document.getElementById('clear-checklist-form-btn').addEventListener('click', () => {
             activeNovosTagId = null; // Deseleciona qualquer tag ativa
@@ -1815,7 +1820,7 @@
             }
 
             const formData = getFormDataNovos();
-            
+
             if (formData.title.trim() === '') {
                 showModal('Aviso', 'O título do checklist não pode ser vazio.');
                 return;
@@ -1866,7 +1871,7 @@
                     showModal('Sucesso', 'Checklist atualizado com sucesso!');
                 } else {
                     // Para novos checklists, o ID do documento é o título do checklist
-                    const docRef = doc(db, COLLECTIONS.DYNAMIC_CHECKLISTS, formData.title); 
+                    const docRef = doc(db, COLLECTIONS.DYNAMIC_CHECKLISTS, formData.title);
                     await retryWithExponentialBackoff(() => setDoc(docRef, dataToSave));
                     showModal('Sucesso', 'Novo checklist salvo com sucesso!');
                 }
@@ -1926,7 +1931,7 @@
                 showModal('Aviso', 'Nenhum checklist selecionado para exclusão.');
             }
         });
-        
+
         // ABA LÍDER e PCMA
 
         const listenForPendingChecklists = (role) => {
@@ -1945,7 +1950,7 @@
                 const checklists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 console.log(`[listenForPendingChecklists] Checklists pendentes para ${role} atualizados:`, checklists.length);
                 renderChecklistsForApproval(role, checklists);
-                
+
                 // Exibe mensagem de pendências se houver checklists para o nível atual
                 if (checklists.length > 0 && currentUser.nivel === role) {
                     showToast(`Você tem ${checklists.length} pendências para aprovação!`, 'info');
@@ -1958,7 +1963,7 @@
         const renderChecklistsForApproval = (role, checklists) => {
             const container = document.getElementById(`${role}-checklists-container`);
             container.innerHTML = '';
-            
+
             const checksToShow = checklists.slice(0, PAGINATION_LIMIT);
 
             if (checksToShow.length === 0) {
@@ -1980,15 +1985,15 @@
                         <button class="reject-btn bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full transition-colors">Reprovar</button>
                     </div>
                 `;
-                
+
                 checklistDiv.querySelector('.view-report-btn').addEventListener('click', () => renderReportModal(checklist));
                 checklistDiv.querySelector('.approve-btn').addEventListener('click', () => updateChecklistStatus(checklist.id, role, 'aprovado'));
                 checklistDiv.querySelector('.reject-btn').addEventListener('click', () => updateChecklistStatus(checklist.id, role, 'reprovado'));
-                
+
                 container.appendChild(checklistDiv);
             });
         };
-        
+
         const updateChecklistStatus = async (checklistId, role, status) => {
             if (!currentUser || !currentUser.appDocId) {
                 showModal('Erro de Permissão', 'Você precisa estar logado para atualizar o status do checklist.');
@@ -2030,7 +2035,7 @@
             const paginationContainer = document.getElementById('realizados-pagination');
             container.innerHTML = '';
             paginationContainer.innerHTML = '';
-            
+
             // Filtra os checklists com base no termo de busca atual
             const filteredChecklists = allAppliedChecklists.filter(checklist => {
                 const searchTerm = currentSearchTermRealizados.toLowerCase();
@@ -2057,7 +2062,7 @@
             checksToDisplay.forEach(checklist => {
                 let statusLiderDisplay = '';
                 let statusPcmaDisplay = '';
-                
+
                 // Ajusta o texto de exibição se não houver necessidade de validação
                 if (checklist.needsValidation === false) {
                     statusLiderDisplay = 'Sem Necessidade de aprovação';
@@ -2070,7 +2075,7 @@
                 const statusLiderColor = statusLiderDisplay === 'aprovado' || statusLiderDisplay === 'Sem Necessidade de aprovação' ? 'bg-green-200 text-green-800' :
                                        statusLiderDisplay === 'reprovado' ? 'bg-red-200 text-red-800' :
                                        'bg-yellow-200 text-yellow-800';
-                
+
                 const statusPcmaColor = statusPcmaDisplay === 'aprovado' || statusPcmaDisplay === 'Sem Necessidade de aprovação' ? 'bg-green-200 text-green-800' :
                                        statusPcmaDisplay === 'reprovado' ? 'bg-red-200 text-red-800' :
                                        'bg-yellow-200 text-yellow-800';
@@ -2094,11 +2099,11 @@
                         <button class="view-report-btn bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded-full text-sm">Visualizar Relatório</button>
                     </div>
                 `;
-                
+
                 checklistDiv.querySelector('.view-report-btn').addEventListener('click', () => renderReportModal(checklist));
                 container.appendChild(checklistDiv);
             });
-            
+
             const pageCount = Math.ceil(filteredChecklists.length / PAGINATION_LIMIT);
             for (let i = 1; i <= pageCount; i++) {
                 const pageBtn = document.createElement('button');
@@ -2116,7 +2121,7 @@
                 paginationContainer.appendChild(pageBtn);
             }
         };
-        
+
         const listenForAppliedChecklists = () => {
             // Verifica se o usuário está autenticado antes de tentar ler
             if (!currentUser || !currentUser.appDocId) {
@@ -2155,14 +2160,14 @@
             currentPageRealizados = 1; // Reseta para a primeira página ao pesquisar
             renderRealizadosList(currentPageRealizados);
         });
-        
+
         const renderReportModal = (checklist) => {
             const reportContent = document.getElementById('report-content');
-            const reportModal = document.getElementById('report-modal'); 
+            const reportModal = document.getElementById('report-modal');
             reportContent.innerHTML = '';
             reportModal.setAttribute('data-id', checklist.id);
             reportModal.setAttribute('data-frota', checklist.frota);
-            
+
             let statusLiderDisplay = '';
             let statusPcmaDisplay = '';
 
@@ -2188,7 +2193,7 @@
                 <p><strong>Status PCMA:</strong> <span class="font-bold">${statusPcmaDisplay}</span></p>
                 <hr class="my-4">
             `;
-            
+
             checklist.checklist.sections.forEach(section => {
                 htmlContent += `
                     <h3 class="text-xl font-bold mt-4 mb-2">${section.sectionTitle}</h3>
@@ -2214,7 +2219,7 @@
                 });
                 htmlContent += `</ul>`;
             });
-            
+
             reportContent.innerHTML = htmlContent;
             reportModal.style.display = 'flex';
         };
@@ -2242,7 +2247,7 @@
                 container.appendChild(div);
             });
         };
-        
+
         // Limpa o formulário de cadastro de usuário
         const clearUserForm = () => {
             const form = document.getElementById('add-user-form');
@@ -2267,7 +2272,7 @@
                 const uniqueUsersMap = new Map(); // Key: usuario (nome de login), Value: o melhor documento de usuário
 
                 snapshot.docs.forEach(docSnap => {
-                    const userData = { appDocId: docSnap.id, ...docSnap.data() }; 
+                    const userData = { appDocId: docSnap.id, ...docSnap.data() };
                     const username = userData.usuario;
 
                     const existingUser = uniqueUsersMap.get(username);
@@ -2340,7 +2345,7 @@
             }
 
 
-            const filteredUsers = allUsers.filter(user => 
+            const filteredUsers = allUsers.filter(user =>
                 // Filtra pela barra de busca
                 (user.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 user.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -2373,15 +2378,15 @@
                         <p class="text-sm text-gray-600">Acesso Abas: <span class="font-medium">${user.acessoAbas && user.acessoAbas.length > 0 ? user.acessoAbas.join(', ') : 'Padrão'}</span></p>
                     </div>
                 `;
-                
+
                 const actionDiv = document.createElement('div');
                 actionDiv.classList.add('flex', 'space-x-4', 'mt-2', 'sm:mt-0'); // Adiciona flex para os botões
-                
+
                 // Botão de Excluir Usuário
                 const deleteBtn = document.createElement('button');
                 deleteBtn.innerHTML = `<i class="fas fa-trash-alt text-red-500 hover:text-red-700"></i>`;
                 deleteBtn.title = `Excluir usuário ${user.nome}`;
-                
+
                 // Esconde o botão de exclusão se for o próprio usuário logado ou se for um master tentando excluir outro master
                 if (currentUser.appDocId === user.appDocId || (currentUser.nivel === 'master' && user.nivel === 'master' && currentUser.appDocId !== user.appDocId)) {
                     deleteBtn.classList.add('hidden');
@@ -2407,7 +2412,7 @@
                             const targetUserDocSnap = await retryWithExponentialBackoff(() => getDoc(targetUserDocRef));
                             if (targetUserDocSnap.exists()) {
                                 const targetUserData = targetUserDocSnap.data();
-                                if (targetUserData.nivel === 'master' && user.nivel !== 'master') { 
+                                if (targetUserData.nivel === 'master' && user.nivel !== 'master') {
                                     reason = 'Um usuário master não pode excluir outro usuário master.';
                                 } else {
                                     canDelete = true;
@@ -2435,7 +2440,7 @@
                     showConfirmModal('Excluir Usuário', `Tem certeza que deseja excluir o usuário "${user.nome}"?`, async () => {
                         try {
                             // Acessa a coleção 'users' diretamente
-                            const docRef = doc(db, COLLECTIONS.USERS, user.appDocId); 
+                            const docRef = doc(db, COLLECTIONS.USERS, user.appDocId);
                             console.log(`[DELETE USER] Excluindo documento de usuário com ID: ${user.appDocId}`);
                             await retryWithExponentialBackoff(() => deleteDoc(docRef));
                             showToast('Usuário excluído com sucesso!');
@@ -2465,7 +2470,7 @@
                     document.getElementById('new-user-password').value = user.senha; // Cuidado ao preencher senhas
                     document.getElementById('new-user-level').value = user.nivel;
                     document.getElementById('add-user-form').setAttribute('data-editing-app-doc-id', user.appDocId); // Armazena o appDocId do usuário a ser editado
-                    
+
                     // Preenche os checkboxes de acesso às abas
                     populateTabAccessCheckboxes(user.acessoAbas || []);
                 });
@@ -2520,7 +2525,7 @@
                 usuario: form['new-user-username'].value.trim(),
                 senha: form['new-user-password'].value.trim(),
                 nivel: form['new-user-level'].value.trim(),
-                ativo: true, 
+                ativo: true,
                 acessoAbas: selectedTabAccess // Adiciona o campo acessoAbas
             };
 
@@ -2591,14 +2596,14 @@
                     reason = 'Você não tem permissão para criar novos usuários.';
                 }
             }
-            
+
             console.log(`[ADD/EDIT USER] Resultado da verificação local para salvar usuário: ${canSave}. Motivo: ${reason}`);
 
             if (!canSave) {
                 showModal('Erro de Permissão', reason);
                 return;
             }
-            
+
             try {
                 let docRef;
                 let message;
@@ -2621,8 +2626,8 @@
                     await retryWithExponentialBackoff(() => setDoc(docRef, userData)); // Usar setDoc sem merge para novos
                     message = 'Novo usuário salvo com sucesso!';
                 }
-                
-                console.log("[ADD/EDIT USER] Tentando salvar usuário no Firestore. Caminho:", docRef.path, "Dados:", userData); 
+
+                console.log("[ADD/EDIT USER] Tentando salvar usuário no Firestore. Caminho:", docRef.path, "Dados:", userData);
                 showToast(message);
                 form.reset();
                 populateTabAccessCheckboxes([]); // Limpa os checkboxes após salvar
@@ -2674,7 +2679,7 @@
                         const workbook = XLSX.read(data, { type: 'array' });
                         const sheetName = workbook.SheetNames[0];
                         const worksheet = workbook.Sheets[sheetName];
-                        
+
                         // Get headers from the worksheet
                         const sheetHeaders = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
                         const missing = validateHeaders(sheetHeaders);
@@ -2694,7 +2699,7 @@
                         let successCount = 0;
                         let errorCount = 0;
                         console.log(`[IMPORT XLSX] Iniciando importação de ${dataRows.length} linhas.`);
-                        
+
                         for (const row of dataRows) {
                             const rowData = {};
                             sheetHeaders.forEach((header, index) => {
@@ -2709,7 +2714,7 @@
                                 senha: rowData.senha,
                                 nivel: rowData.nivel, // Now correctly maps 'Nivel' to 'nivel'
                                 id: rowData.id,
-                                ativo: true, 
+                                ativo: true,
                                 criadoEm: serverTimestamp(),
                                 actualFirebaseAuthUid: null,
                                 acessoAbas: []
@@ -2738,7 +2743,7 @@
                                     continue;
                                 }
 
-                                const docRef = doc(db, COLLECTIONS.USERS, newAppDocId); 
+                                const docRef = doc(db, COLLECTIONS.USERS, newAppDocId);
                                 console.log(`[IMPORT XLSX] Tentando salvar usuário importado: ${userData.usuario} com ID: ${newAppDocId}`);
                                 await retryWithExponentialBackoff(() => setDoc(docRef, userData));
                                 successCount++;
@@ -2815,7 +2820,7 @@
                                 senha: rowData.senha,
                                 nivel: rowData.nivel,
                                 id: rowData.id,
-                                ativo: true, 
+                                ativo: true,
                                 criadoEm: serverTimestamp(),
                                 actualFirebaseAuthUid: null,
                                 acessoAbas: []
@@ -2844,7 +2849,7 @@
                                     continue;
                                 }
 
-                                const docRef = doc(db, COLLECTIONS.USERS, newAppDocId); 
+                                const docRef = doc(db, COLLECTIONS.USERS, newAppDocId);
                                 console.log(`[IMPORT CSV] Tentando salvar usuário importado: ${userData.usuario} com ID: ${newAppDocId}`);
                                 await retryWithExponentialBackoff(() => setDoc(docRef, userData));
                                 successCount++;
@@ -2925,7 +2930,7 @@
         // --- Event Listeners Globais ---
         document.getElementById('modal-close-btn').addEventListener('click', hideModal);
         document.getElementById('confirm-modal-cancel-btn').addEventListener('click', hideModal);
-        
+
         document.getElementById('aplicador-tab').addEventListener('click', () => switchTab('aplicador'));
         document.getElementById('lider-tab').addEventListener('click', () => switchTab('lider'));
         document.getElementById('pcma-tab').addEventListener('click', () => switchTab('pcma'));
@@ -2937,7 +2942,7 @@
         // Botão de Atualizar Página
         document.getElementById('refresh-page-btn').addEventListener('click', () => {
             // Recarrega a página atual sem deslogar o usuário, aproveitando o onAuthStateChanged
-            window.location.reload(); 
+            window.location.reload();
         });
 
         // --- Funções de Impressão e Exportação ---
@@ -2964,7 +2969,7 @@
                     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                     heightLeft -= pageHeight;
                 }
-                
+
                 // Return the PDF as a Blob
                 return pdf.output('blob');
 
@@ -3023,7 +3028,7 @@
                 if (section.sectionTitle.toLowerCase() !== 'teste') {
                     text += `${section.sectionTitle}\n`;
                 }
-                
+
                 section.items.forEach(item => {
                     let responseValue = '';
                     let itemTextForReport = item.itemText; // Usar o texto do item como está
@@ -3037,7 +3042,7 @@
                 });
                 // Adiciona uma linha em branco entre as seções para legibilidade, exceto se for a última seção
                 if (checklist.checklist.sections.indexOf(section) < checklist.checklist.sections.length - 1) {
-                    text += `\n`; 
+                    text += `\n`;
                 }
             });
 
@@ -3095,7 +3100,7 @@
                 showModal('Erro', 'Checklist não encontrado para exportação.');
                 return;
             }
-            
+
             const data = [];
             data.push(['Título', checklist.checklist.title]);
             data.push(['Frota', checklist.frota]);
@@ -3110,7 +3115,7 @@
             data.push(['Status PCMA', checklist.needsValidation ? checklist.status.pcma : 'Sem Necessidade de aprovação']);
             data.push([]);
             data.push(['Seção', 'Item', 'Resposta', 'Observação']);
-            
+
             checklist.checklist.sections.forEach(section => {
                 section.items.forEach(item => {
                     let resposta = '';
@@ -3182,7 +3187,7 @@
                 togglePasswordVisibility('#current-password-modal', '#toggle-current-password-modal');
                 togglePasswordVisibility('#new-password-modal', '#toggle-new-password-modal');
                 togglePasswordVisibility('#confirm-new-password-modal', '#toggle-confirm-new-password-modal');
-                
+
                 const passwordInput = document.getElementById('password');
                 const capsLockWarning = document.getElementById('caps-lock-warning');
                 if (passwordInput && capsLockWarning) {
